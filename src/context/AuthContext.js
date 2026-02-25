@@ -14,29 +14,28 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   // 🔹 login
-  const login = (username, password) => {
-    const users = {
-      admin: { password: "admin123", role: "admin" },
-      artisan: { password: "artisan123", role: "artisan" },
-      buyer: { password: "buyer123", role: "buyer" },
-      marketing: { password: "marketing123", role: "marketing" },
-    };
-
-    const user = users[username.toLowerCase()];
-
-    if (user && user.password === password) {
-      setUser({ role: user.role, username });
-      return { success: true, role: user.role };
-    }
-
-    return { success: false };
+ const login = (username, password) => {
+  const users = {
+    admin: { password: "admin123", role: "admin" },
+    artisan: { password: "artisan123", role: "artisan" },
+    buyer: { password: "buyer123", role: "buyer" },
+    marketing: { password: "marketing123", role: "marketing" },
   };
 
-  // 🔹 logout (FIXED)
+  const user = users[username.toLowerCase()];
+
+  if (user && user.password === password) {
+    setUser({ role: user.role, username });
+    return { success: true, role: user.role };
+  }
+
+  return { success: false };
+};
+
+  // 🔹 logout
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
-    localStorage.removeItem("cart"); // ⭐ important fix
   };
 
   return (

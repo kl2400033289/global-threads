@@ -1,29 +1,16 @@
 import "./AdminDashboard.css";
 import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-
 import { ProductContext } from "../context/ProductContext";
-import { OrderContext } from "../context/OrderContext";
-import { ArtisanContext } from "../context/ArtisanContext";
-import { UserContext } from "../context/UserContext";
 
 function AdminDashboard() {
-  // ===== CONTEXTS =====
+  // ✅ global products
   const { products, setProducts } = useContext(ProductContext);
-  const { orders } = useContext(OrderContext);
-  const {
-    artisans,
-    addArtisan,
-    removeArtisan,
-    toggleBlock,
-    updateRating,
-  } = useContext(ArtisanContext);
-  const { users, removeUser, toggleBlockUser } =
-    useContext(UserContext);
 
-  // ===== STATE =====
+  // ✅ active sidebar tab
   const [activeTab, setActiveTab] = useState("dashboard");
 
+  // ✅ form state
   const [form, setForm] = useState({
     name: "",
     price: "",
@@ -32,30 +19,36 @@ function AdminDashboard() {
 
   const [preview, setPreview] = useState("");
 
-  const [newArtisan, setNewArtisan] = useState({
-    name: "",
-    location: "",
-  });
-
-  // ===== PRODUCT HANDLERS =====
+  // ===============================
+  // 🔹 HANDLE INPUT
+  // ===============================
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ===============================
+  // 🔹 IMAGE UPLOAD
+  // ===============================
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
+
     reader.onloadend = () => {
       setForm({ ...form, image: reader.result });
       setPreview(reader.result);
     };
+
     reader.readAsDataURL(file);
   };
 
+  // ===============================
+  // 🔹 ADD PRODUCT
+  // ===============================
   const addProduct = (e) => {
     e.preventDefault();
+
     if (!form.name || !form.price) return;
 
     const newProduct = {
@@ -66,18 +59,22 @@ function AdminDashboard() {
     };
 
     setProducts([...products, newProduct]);
+
     setForm({ name: "", price: "", image: "" });
     setPreview("");
   };
 
+  // ===============================
+  // 🔹 DELETE PRODUCT
+  // ===============================
   const deleteProduct = (id) => {
     setProducts(products.filter((p) => p.id !== id));
   };
 
-  // ===== RENDER =====
   return (
-    <div className="admin-layout admin-light">
-      {/* ===== SIDEBAR ===== */}
+ <div className="admin-layout">
+  <div className="admin-layout admin-light"></div>
+      {/* ================= SIDEBAR ================= */}
       <aside className="sidebar">
         <h2 className="sidebar-logo">🌍 Admin</h2>
 
@@ -130,9 +127,10 @@ function AdminDashboard() {
         </Link>
       </aside>
 
-      {/* ===== MAIN ===== */}
+      {/* ================= MAIN ================= */}
       <main className="admin-main">
-        {/* ===== DASHBOARD ===== */}
+
+        {/* ================= DASHBOARD ================= */}
         {activeTab === "dashboard" && (
           <>
             <h1 className="admin-title">Admin Dashboard</h1>
@@ -144,28 +142,24 @@ function AdminDashboard() {
               </div>
 
               <div className="stat-card">
-                <h3>{orders.length}</h3>
+                <h3>₹0</h3>
+                <p>Total Revenue</p>
+              </div>
+
+              <div className="stat-card">
+                <h3>0</h3>
                 <p>Total Orders</p>
-              </div>
-
-              <div className="stat-card">
-                <h3>{artisans.length}</h3>
-                <p>Total Artisans</p>
-              </div>
-
-              <div className="stat-card">
-                <h3>{users.length}</h3>
-                <p>Total Users</p>
               </div>
             </div>
           </>
         )}
 
-        {/* ===== PRODUCTS ===== */}
+        {/* ================= PRODUCTS ================= */}
         {activeTab === "products" && (
           <>
             <h1 className="admin-title">Product Management</h1>
 
+            {/* ===== ADD PRODUCT ===== */}
             <div className="admin-form-card">
               <h2>Add New Product</h2>
 
@@ -186,12 +180,14 @@ function AdminDashboard() {
                   onChange={handleChange}
                 />
 
+                {/* ✅ FILE PICKER */}
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
                 />
 
+                {/* ✅ IMAGE PREVIEW */}
                 {preview && (
                   <img
                     src={preview}
@@ -204,13 +200,34 @@ function AdminDashboard() {
               </form>
             </div>
 
+            {/* ===== PRODUCT TABLE ===== */}
             <div className="admin-table">
               <h2>All Products</h2>
 
               <table>
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
                 <tbody>
                   {products.map((p) => (
                     <tr key={p.id}>
+                      <td>
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          style={{
+                            width: "50px",
+                            borderRadius: "6px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </td>
                       <td>{p.name}</td>
                       <td>₹{p.price}</td>
                       <td>
@@ -229,112 +246,38 @@ function AdminDashboard() {
           </>
         )}
 
-        {/* ===== ARTISANS ===== */}
+        {/* ================= ARTISANS ================= */}
         {activeTab === "artisans" && (
-          <div className="admin-artisans">
-            <h1 className="admin-title">Artisan Management</h1>
-
-            <div className="artisan-form">
-              <input
-                placeholder="Artisan name"
-                value={newArtisan.name}
-                onChange={(e) =>
-                  setNewArtisan({
-                    ...newArtisan,
-                    name: e.target.value,
-                  })
-                }
-              />
-              <input
-                placeholder="Location"
-                value={newArtisan.location}
-                onChange={(e) =>
-                  setNewArtisan({
-                    ...newArtisan,
-                    location: e.target.value,
-                  })
-                }
-              />
-              <button onClick={() => addArtisan(newArtisan)}>
-                Add Artisan
-              </button>
-            </div>
-
-            {artisans.map((a) => (
-              <div key={a.id} className="artisan-card">
-                <h3>{a.name}</h3>
-                <p>📍 {a.location}</p>
-                <p>⭐ Rating: {a.rating}</p>
-                <button onClick={() => toggleBlock(a.id)}>
-                  {a.blocked ? "Unblock" : "Block"}
-                </button>
-                <button onClick={() => removeArtisan(a.id)}>
-                  Remove
-                </button>
-                <button onClick={() => updateRating(a.id, 5)}>
-                  Give 5⭐
-                </button>
-              </div>
-            ))}
+          <div>
+            <h1 className="admin-title">Artisans</h1>
+            <p className="empty-text">No artisans added yet.</p>
           </div>
         )}
 
-        {/* ===== ORDERS ===== */}
+        {/* ================= ORDERS ================= */}
         {activeTab === "orders" && (
-          <div className="admin-orders">
-            <h2>All Orders</h2>
-
-            {orders.map((order) => (
-              <div key={order.id} className="order-card">
-                <h3>👤 {order.username}</h3>
-                <p>Total: ₹{order.total}</p>
-                <p>Items: {order.items?.length}</p>
-              </div>
-            ))}
+          <div>
+            <h1 className="admin-title">Orders</h1>
+            <p className="empty-text">Order management coming soon.</p>
           </div>
         )}
 
-        {/* ===== USERS ===== */}
+        {/* ================= USERS ================= */}
         {activeTab === "users" && (
-          <div className="admin-users">
-            <h1 className="admin-title">
-              Users ({users.length})
-            </h1>
-
-            {users.length === 0 ? (
-              <p className="empty-text">No users found.</p>
-            ) : (
-              <div className="users-grid">
-                {users.map((u) => (
-                  <div key={u.id} className="user-card">
-                    <h3>👤 {u.username}</h3>
-                    <p><strong>Role:</strong> {u.role}</p>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      {u.blocked ? "🚫 Blocked" : "✅ Active"}
-                    </p>
-
-                    <div className="user-actions">
-                      <button
-                        className="block-btn"
-                        onClick={() => toggleBlockUser(u.id)}
-                      >
-                        {u.blocked ? "Unblock" : "Block"}
-                      </button>
-
-                      <button
-                        className="delete-btn"
-                        onClick={() => removeUser(u.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div>
+            <h1 className="admin-title">Users</h1>
+            <p className="empty-text">User management coming soon.</p>
           </div>
         )}
+
+        {/* ================= SETTINGS ================= */}
+        {activeTab === "settings" && (
+          <div>
+            <h1 className="admin-title">Settings</h1>
+            <p className="empty-text">Admin settings panel.</p>
+          </div>
+        )}
+
       </main>
     </div>
   );

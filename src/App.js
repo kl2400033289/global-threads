@@ -12,13 +12,11 @@ import OrderHistory from "./pages/OrderHistory";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
-import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <Toaster position="top-right" />
 
       <Routes>
         {/* public routes */}
@@ -26,15 +24,10 @@ function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={
-          <ProtectedRoute>
-            <Checkout />
-            </ProtectedRoute>
-          }
-           />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/orders" element={<OrderHistory />} />
-        <Route path="/artisan" element={<ArtisanDashboard />} /> 
+        <Route path="/artisan" element={<ArtisanDashboard />} />
 
 
         {/* 🔐 protected routes */}

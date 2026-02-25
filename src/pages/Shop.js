@@ -1,30 +1,14 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ProductContext } from "../context/ProductContext";
 import { CartContext } from "../context/CartContext";
-import { AuthContext } from "../context/AuthContext";
-import toast from "react-hot-toast";
 import "./Shop.css";
 
 function Shop() {
   const { products } = useContext(ProductContext);
   const { addToCart } = useContext(CartContext);
-  const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
 
-  // 🔒 Protected Add to Cart
-  const handleAddToCart = (product) => {
-  if (!user) {
-    toast.error("Please login to add items to cart");
-    navigate("/login");
-    return;
-  }
-
-  addToCart(product);
-  toast.success("Added to cart");
-};
   // 🔎 filter products
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
@@ -68,7 +52,7 @@ function Shop() {
 
               <button
                 className="add-btn"
-                onClick={() => handleAddToCart(product)}
+                onClick={() => addToCart(product)}
               >
                 Add to Cart
               </button>

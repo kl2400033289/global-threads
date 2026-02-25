@@ -197,29 +197,3 @@
 .empty-text {
   color: #64748b;
 }
-.users-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.user-card {
-  background: white;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.user-actions {
-  margin-top: 10px;
-  display: flex;
-  gap: 8px;
-}
-
-.block-btn {
-  background: #ffb020;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}

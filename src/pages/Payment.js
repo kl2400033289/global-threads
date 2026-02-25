@@ -2,15 +2,12 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { OrderContext } from "../context/OrderContext";
-import { AuthContext } from "../context/AuthContext";
 import "./Payment.css";
 
 function Payment() {
   const navigate = useNavigate();
-
   const { cart, clearCart } = useContext(CartContext);
   const { addOrder } = useContext(OrderContext);
-  const { user } = useContext(AuthContext);
 
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +23,6 @@ function Payment() {
     setTimeout(() => {
       const newOrder = {
         id: Date.now(),
-        username: user?.username || "guest", // ⭐ important
         items: cart,
         total,
         date: new Date().toLocaleString(),
@@ -36,7 +32,8 @@ function Payment() {
       clearCart();
 
       alert("✅ Payment Successful!");
-      navigate("/");
+
+      navigate("/orders"); // ⭐ redirect
     }, 2000);
   };
 

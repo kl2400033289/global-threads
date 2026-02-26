@@ -1,12 +1,14 @@
 import { useContext, useState } from "react";
 import { ProductContext } from "../context/ProductContext";
 import { CartContext } from "../context/CartContext";
+import { useLanguage } from "../context/LanguageContext";
 import toast from "react-hot-toast";
 import "./BuyerDashboard.css";
 
 function BuyerDashboard() {
   const { products, setProducts } = useContext(ProductContext);
   const { addToCart } = useContext(CartContext);
+  const { t } = useLanguage();
 
   const [reviewProductId, setReviewProductId] = useState(null);
   const [rating, setRating] = useState(5);
@@ -48,7 +50,7 @@ function BuyerDashboard() {
   // ⭐ submit review
   const submitReview = () => {
     if (comment.trim().length < 4) {
-      toast.error("Please add a slightly longer review");
+      toast.error(t("buyer.reviewTooShort"));
       return;
     }
 
@@ -73,7 +75,7 @@ function BuyerDashboard() {
 
     setReviewProductId(null);
     setComment("");
-    toast.success("Thank you! Your review has been added.");
+    toast.success(t("buyer.reviewThanks"));
   };
 
   // 🎨 customization
@@ -83,24 +85,23 @@ function BuyerDashboard() {
 
   return (
     <div className="buyer-dashboard">
-      <h1>Handloom Bazaar</h1>
+      <h1>{t("buyer.title")}</h1>
       <p className="buyer-subtitle">
-        Discover timeless local weaves, request custom artisan work, and share
-        trusted buyer feedback.
+        {t("buyer.subtitle")}
       </p>
 
       <div className="buyer-controls">
         <input
           type="text"
-          placeholder="Search handloom collections"
+          placeholder={t("buyer.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="top-rated">Sort: Top Rated</option>
-          <option value="price-low">Sort: Price Low to High</option>
-          <option value="price-high">Sort: Price High to Low</option>
+          <option value="top-rated">{t("buyer.sortTopRated")}</option>
+          <option value="price-low">{t("buyer.sortPriceLow")}</option>
+          <option value="price-high">{t("buyer.sortPriceHigh")}</option>
         </select>
       </div>
 
@@ -118,38 +119,38 @@ function BuyerDashboard() {
               className="add-btn"
               onClick={() => {
                 addToCart(product);
-                toast.success("Added to cart");
+                toast.success(t("buyer.addedToCart"));
               }}
             >
-              Add to Cart
+              {t("buyer.addToCart")}
             </button>
 
             <button
               className="review-btn"
               onClick={() => openReview(product.id)}
             >
-              Write Review
+              {t("buyer.writeReview")}
             </button>
 
             <button
               className="custom-btn"
               onClick={() => requestCustomization(product)}
             >
-              Ask for Customization
+              {t("buyer.askCustomization")}
             </button>
           </div>
         ))}
       </div>
 
       {displayProducts.length === 0 && (
-        <p className="empty-state">No products match your search.</p>
+        <p className="empty-state">{t("buyer.noProducts")}</p>
       )}
 
       {/* ⭐ REVIEW MODAL */}
       {reviewProductId && (
         <div className="review-modal">
           <div className="review-box">
-            <h3>Write Review</h3>
+            <h3>{t("buyer.reviewTitle")}</h3>
             <select
               value={rating}
               onChange={(e) => setRating(Number(e.target.value))}
@@ -162,16 +163,16 @@ function BuyerDashboard() {
             </select>
 
             <textarea
-              placeholder="Share your experience with quality, fit, and finish"
+              placeholder={t("buyer.reviewPlaceholder")}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
             />
 
             <button className="primary-action" onClick={submitReview}>
-              Submit Review
+              {t("buyer.submitReview")}
             </button>
             <button className="ghost-action" onClick={() => setReviewProductId(null)}>
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>
@@ -181,10 +182,10 @@ function BuyerDashboard() {
       {customProduct && (
         <div className="review-modal">
           <div className="review-box">
-            <h3>Customization Request — {customProduct.name}</h3>
+            <h3>{t("buyer.customTitle")} — {customProduct.name}</h3>
 
             <textarea
-              placeholder="Tell the artisan your preferred color, fabric details, fit, and timeline"
+              placeholder={t("buyer.customPlaceholder")}
               value={customMsg}
               onChange={(e) => setCustomMsg(e.target.value)}
             />
@@ -193,20 +194,20 @@ function BuyerDashboard() {
               className="primary-action"
               onClick={() => {
                 if (customMsg.trim().length < 8) {
-                  toast.error("Please add a bit more detail for the artisan");
+                  toast.error(t("buyer.customTooShort"));
                   return;
                 }
 
-                toast.success("Customization request sent to artisan");
+                toast.success(t("buyer.customSent"));
                 setCustomProduct(null);
                 setCustomMsg("");
               }}
             >
-              Send Request
+              {t("buyer.sendRequest")}
             </button>
 
             <button className="ghost-action" onClick={() => setCustomProduct(null)}>
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>

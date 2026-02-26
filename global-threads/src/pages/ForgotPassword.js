@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
 import "./Login.css"; // reuse same styles
 
 function ForgotPassword() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [step, setStep] = useState(1); // 1: username, 2: OTP, 3: new password
   const [username, setUsername] = useState("");
@@ -31,7 +33,7 @@ function ForgotPassword() {
     );
 
     if (!userExists) {
-      setMessage("Username not found");
+      setMessage(t("forgot.usernameNotFound"));
       return;
     }
 
@@ -39,14 +41,14 @@ function ForgotPassword() {
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otpCode);
     setStep(2);
-    setMessage(`Your OTP is: ${otpCode} (for demo purposes)`); // in real apps, send via email
+    setMessage(`${t("forgot.otpMessagePrefix")}: ${otpCode} ${t("forgot.otpMessageSuffix")}`); // in real apps, send via email
   };
 
   // Step 2: Verify OTP
   const handleOtpSubmit = (e) => {
     e.preventDefault();
     if (otp !== generatedOtp) {
-      setMessage("Invalid OTP");
+      setMessage(t("forgot.invalidOtp"));
       return;
     }
     setStep(3);
@@ -55,11 +57,11 @@ function ForgotPassword() {
 
   // Password strength check
   const checkStrength = (pwd) => {
-    if (pwd.length < 4) return "Weak";
-    if (pwd.match(/[a-z]/) && pwd.match(/[0-9]/)) return "Medium";
+    if (pwd.length < 4) return t("forgot.weak");
+    if (pwd.match(/[a-z]/) && pwd.match(/[0-9]/)) return t("forgot.medium");
     if (pwd.match(/[a-z]/) && pwd.match(/[0-9]/) && pwd.match(/[!@#$%^&*]/))
-      return "Strong";
-    return "Weak";
+      return t("forgot.strong");
+    return t("forgot.weak");
   };
 
   const handlePasswordChange = (e) => {
@@ -71,7 +73,7 @@ function ForgotPassword() {
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setMessage("Passwords do not match");
+      setMessage(t("signup.passwordMismatch"));
       return;
     }
 
@@ -86,12 +88,12 @@ function ForgotPassword() {
     } else {
       // check demo users (optional: allow changing demo passwords for testing)
       setMessage(
-        "Cannot change password for demo users. Use a signup account."
+        t("forgot.cannotChangeDemo")
       );
       return;
     }
 
-    setMessage("Password updated successfully!");
+    setMessage(t("forgot.passwordUpdated"));
     setTimeout(() => {
       navigate("/login");
     }, 1500);
@@ -99,20 +101,20 @@ function ForgotPassword() {
 
   return (
     <div className="role-container">
-      <h1 className="role-title">Forgot Password</h1>
+      <h1 className="role-title">{t("forgot.title")}</h1>
 
       {step === 1 && (
         <form className="login-form" onSubmit={handleUsernameSubmit}>
           <input
             type="text"
-            placeholder="Enter your username"
+            placeholder={t("forgot.enterUsername")}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
           {message && <p className="error-text">{message}</p>}
           <button type="submit" className="primary-btn">
-            Next
+            {t("forgot.next")}
           </button>
         </form>
       )}
@@ -121,14 +123,14 @@ function ForgotPassword() {
         <form className="login-form" onSubmit={handleOtpSubmit}>
           <input
             type="text"
-            placeholder="Enter OTP"
+            placeholder={t("forgot.enterOtp")}
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             required
           />
           {message && <p className="error-text">{message}</p>}
           <button type="submit" className="primary-btn">
-            Verify OTP
+            {t("forgot.verifyOtp")}
           </button>
         </form>
       )}
@@ -137,33 +139,33 @@ function ForgotPassword() {
         <form className="login-form" onSubmit={handlePasswordSubmit}>
           <input
             type="password"
-            placeholder="New Password"
+            placeholder={t("forgot.newPassword")}
             value={newPassword}
             onChange={handlePasswordChange}
             required
           />
           <input
             type="password"
-            placeholder="Confirm Password"
+            placeholder={t("forgot.confirmPassword")}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
-          {strength && <p>Password Strength: {strength}</p>}
+          {strength && <p>{t("forgot.passwordStrength")}: {strength}</p>}
           {message && <p className="error-text">{message}</p>}
           <button type="submit" className="primary-btn">
-            Reset Password
+            {t("forgot.resetPassword")}
           </button>
         </form>
       )}
 
       <p style={{ marginTop: "20px" }}>
-        Remembered your password?{" "}
+        {t("forgot.remembered")}{" "}
         <span
           style={{ color: "#8b1e2d", cursor: "pointer", fontWeight: "600" }}
           onClick={() => navigate("/login")}
         >
-          Login
+          {t("forgot.login")}
         </span>
       </p>
     </div>

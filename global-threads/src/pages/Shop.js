@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ProductContext } from "../context/ProductContext";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 import toast from "react-hot-toast";
 import "./Shop.css";
 
@@ -10,6 +11,7 @@ function Shop() {
   const { products } = useContext(ProductContext);
   const { addToCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
@@ -25,13 +27,13 @@ function Shop() {
   // 🔒 Protected Add to Cart
   const handleAddToCart = (product) => {
   if (!user) {
-    toast.error("Please login to add items to cart");
+    toast.error(t("shop.loginToAdd"));
     navigate("/login");
     return;
   }
 
   addToCart(product);
-  toast.success("Added to cart");
+  toast.success(t("shop.addedToCart"));
 };
 
   const filteredProducts = products
@@ -56,15 +58,15 @@ function Shop() {
 
   return (
     <div className="shop-page">
-      <h1 className="shop-title">🛍 Luxury Handloom Collection</h1>
+      <h1 className="shop-title">🛍 {t("shop.title")}</h1>
       <p className="shop-subtitle">
-        Discover artisan-made Indian textiles curated for timeless style.
+        {t("shop.subtitle")}
       </p>
 
       <div className="shop-controls">
         <input
           type="text"
-          placeholder="Search products..."
+          placeholder={t("shop.searchPlaceholder")}
           className="shop-search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -75,17 +77,17 @@ function Shop() {
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
-          <option value="featured">Sort: Featured</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="rating">Top Rated</option>
+          <option value="featured">{t("shop.sortFeatured")}</option>
+          <option value="price-low">{t("shop.sortPriceLow")}</option>
+          <option value="price-high">{t("shop.sortPriceHigh")}</option>
+          <option value="rating">{t("shop.sortRating")}</option>
         </select>
       </div>
 
-      <p className="results-count">{filteredProducts.length} items available</p>
+      <p className="results-count">{filteredProducts.length} {t("shop.itemsAvailable")}</p>
 
       {filteredProducts.length === 0 ? (
-        <p className="empty-text">No products found. Try a different search term.</p>
+        <p className="empty-text">{t("shop.noProducts")}</p>
       ) : (
         <div className="shop-grid">
           {filteredProducts.map((product) => (
@@ -109,7 +111,7 @@ function Shop() {
                 className="add-btn"
                 onClick={() => handleAddToCart(product)}
               >
-                Add to Cart
+                {t("shop.addToCart")}
               </button>
             </div>
           ))}

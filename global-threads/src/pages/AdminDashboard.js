@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import { ProductContext } from "../context/ProductContext";
 import { OrderContext } from "../context/OrderContext";
 import { UserContext } from "../context/UserContext";
+import { useLanguage } from "../context/LanguageContext";
 
 function AdminDashboard() {
   const { products, setProducts } = useContext(ProductContext);
   const { orders } = useContext(OrderContext);
   const { users, removeUser, toggleBlockUser } = useContext(UserContext);
+  const { t } = useLanguage();
 
   const [activeTab, setActiveTab] = useState("dashboard");
   const [preview, setPreview] = useState("");
@@ -161,65 +163,65 @@ function AdminDashboard() {
   const forceLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("cart");
-    alert("Active session cleared. User needs to log in again.");
+    alert(t("admin.sessionCleared"));
   };
 
   const clearCartCache = () => {
     localStorage.removeItem("cart");
-    alert("Cart cache cleared.");
+    alert(t("admin.cartCacheCleared"));
   };
 
   return (
     <div className="admin-layout admin-light">
       <aside className="sidebar">
-        <h2 className="sidebar-logo">🌍 Admin</h2>
+        <h2 className="sidebar-logo">🌍 {t("admin.sidebarTitle")}</h2>
 
         <ul className="sidebar-menu">
           <li
             className={activeTab === "dashboard" ? "active" : ""}
             onClick={() => setActiveTab("dashboard")}
           >
-            📊 Dashboard
+            📊 {t("admin.tabDashboard")}
           </li>
 
           <li
             className={activeTab === "products" ? "active" : ""}
             onClick={() => setActiveTab("products")}
           >
-            📦 Products
+            📦 {t("admin.tabProducts")}
           </li>
 
           <li
             className={activeTab === "accounts" ? "active" : ""}
             onClick={() => setActiveTab("accounts")}
           >
-            👥 User Accounts
+            👥 {t("admin.tabAccounts")}
           </li>
 
           <li
             className={activeTab === "transactions" ? "active" : ""}
             onClick={() => setActiveTab("transactions")}
           >
-            🧾 Transactions
+            🧾 {t("admin.tabTransactions")}
           </li>
 
           <li
             className={activeTab === "security" ? "active" : ""}
             onClick={() => setActiveTab("security")}
           >
-            🔐 Security
+            🔐 {t("admin.tabSecurity")}
           </li>
 
           <li
             className={activeTab === "disputes" ? "active" : ""}
             onClick={() => setActiveTab("disputes")}
           >
-            ⚖️ Disputes
+            ⚖️ {t("admin.tabDisputes")}
           </li>
         </ul>
 
         <Link to="/" className="back-home">
-          ⬅ Back to Site
+          ⬅ {t("admin.backToSite")}
         </Link>
       </aside>
 
@@ -231,32 +233,32 @@ function AdminDashboard() {
             <div className="admin-stats">
               <div className="stat-card">
                 <h3>{users.length}</h3>
-                <p>Total Accounts</p>
+                <p>{t("admin.totalAccounts")}</p>
               </div>
 
               <div className="stat-card">
                 <h3>{buyers.length}</h3>
-                <p>Buyer Accounts</p>
+                <p>{t("admin.buyerAccounts")}</p>
               </div>
 
               <div className="stat-card">
                 <h3>{artisans.length}</h3>
-                <p>Artisan Accounts</p>
+                <p>{t("admin.artisanAccounts")}</p>
               </div>
 
               <div className="stat-card">
                 <h3>{orders.length}</h3>
-                <p>Total Transactions</p>
+                <p>{t("admin.totalTransactions")}</p>
               </div>
 
               <div className="stat-card">
                 <h3>₹{totalRevenue}</h3>
-                <p>Revenue</p>
+                <p>{t("admin.revenue")}</p>
               </div>
 
               <div className="stat-card">
                 <h3>{pendingDisputes.length}</h3>
-                <p>Open Disputes</p>
+                <p>{t("admin.openDisputes")}</p>
               </div>
             </div>
           </>
@@ -264,16 +266,16 @@ function AdminDashboard() {
 
         {activeTab === "products" && (
           <>
-            <h1 className="admin-title">Product Management</h1>
+            <h1 className="admin-title">{t("admin.productTitle")}</h1>
 
             <div className="admin-form-card">
-              <h2>Add New Product</h2>
+              <h2>{t("admin.addNewProduct")}</h2>
 
               <form onSubmit={addProduct} className="admin-form">
                 <input
                   type="text"
                   name="name"
-                  placeholder="Product name"
+                  placeholder={t("admin.productName")}
                   value={form.name}
                   onChange={handleChange}
                 />
@@ -281,7 +283,7 @@ function AdminDashboard() {
                 <input
                   type="number"
                   name="price"
-                  placeholder="Price"
+                  placeholder={t("admin.price")}
                   value={form.price}
                   onChange={handleChange}
                 />
@@ -290,12 +292,12 @@ function AdminDashboard() {
 
                 {preview && <img src={preview} alt="preview" className="image-preview" />}
 
-                <button type="submit">➕ Add Product</button>
+                <button type="submit">➕ {t("admin.addProduct")}</button>
               </form>
             </div>
 
             <div className="admin-table">
-              <h2>All Products</h2>
+              <h2>{t("admin.allProducts")}</h2>
 
               <table>
                 <tbody>
@@ -305,7 +307,7 @@ function AdminDashboard() {
                       <td>₹{product.price}</td>
                       <td>
                         <button className="delete-btn" onClick={() => deleteProduct(product.id)}>
-                          🗑 Delete
+                          🗑 {t("admin.delete")}
                         </button>
                       </td>
                     </tr>
@@ -318,30 +320,30 @@ function AdminDashboard() {
 
         {activeTab === "accounts" && (
           <div>
-            <h1 className="admin-title">Manage User Accounts</h1>
+            <h1 className="admin-title">{t("admin.manageAccountsTitle")}</h1>
 
             <div className="accounts-columns">
               <section className="admin-table">
                 <h2>Artisan Accounts ({artisans.length})</h2>
                 {artisans.length === 0 ? (
-                  <p className="empty-text">No artisan accounts found.</p>
+                  <p className="empty-text">{t("admin.noArtisans")}</p>
                 ) : (
                   <div className="users-grid">
                     {artisans.map((account) => (
                       <div key={account.id} className="user-card">
                         <h3>👤 {account.username}</h3>
                         <p>
-                          <strong>Role:</strong> artisan
+                          <strong>{t("admin.role")}:</strong> artisan
                         </p>
                         <p>
-                          <strong>Status:</strong> {account.blocked ? "🚫 Blocked" : "✅ Active"}
+                          <strong>{t("admin.status")}:</strong> {account.blocked ? `🚫 ${t("admin.blocked")}` : `✅ ${t("admin.active")}`}
                         </p>
                         <div className="user-actions">
                           <button className="block-btn" onClick={() => toggleBlockUser(account.id)}>
-                            {account.blocked ? "Unblock" : "Block"}
+                            {account.blocked ? t("admin.unblock") : t("admin.block")}
                           </button>
                           <button className="delete-btn" onClick={() => removeUser(account.id)}>
-                            Delete
+                            {t("admin.delete")}
                           </button>
                         </div>
                       </div>
@@ -353,24 +355,24 @@ function AdminDashboard() {
               <section className="admin-table">
                 <h2>Buyer Accounts ({buyers.length})</h2>
                 {buyers.length === 0 ? (
-                  <p className="empty-text">No buyer accounts found.</p>
+                  <p className="empty-text">{t("admin.noBuyers")}</p>
                 ) : (
                   <div className="users-grid">
                     {buyers.map((account) => (
                       <div key={account.id} className="user-card">
                         <h3>👤 {account.username}</h3>
                         <p>
-                          <strong>Role:</strong> buyer
+                          <strong>{t("admin.role")}:</strong> buyer
                         </p>
                         <p>
-                          <strong>Status:</strong> {account.blocked ? "🚫 Blocked" : "✅ Active"}
+                          <strong>{t("admin.status")}:</strong> {account.blocked ? `🚫 ${t("admin.blocked")}` : `✅ ${t("admin.active")}`}
                         </p>
                         <div className="user-actions">
                           <button className="block-btn" onClick={() => toggleBlockUser(account.id)}>
-                            {account.blocked ? "Unblock" : "Block"}
+                            {account.blocked ? t("admin.unblock") : t("admin.block")}
                           </button>
                           <button className="delete-btn" onClick={() => removeUser(account.id)}>
-                            Delete
+                            {t("admin.delete")}
                           </button>
                         </div>
                       </div>
@@ -384,41 +386,41 @@ function AdminDashboard() {
 
         {activeTab === "transactions" && (
           <div>
-            <h1 className="admin-title">Monitor Transactions</h1>
+            <h1 className="admin-title">{t("admin.monitorTransactions")}</h1>
 
             <div className="admin-stats">
               <div className="stat-card">
                 <h3>{orders.length}</h3>
-                <p>Total Transactions</p>
+                <p>{t("admin.totalTransactions")}</p>
               </div>
               <div className="stat-card">
                 <h3>₹{totalRevenue}</h3>
-                <p>Total Revenue</p>
+                <p>{t("admin.totalRevenue")}</p>
               </div>
               <div className="stat-card">
                 <h3>₹{Math.round(avgOrderValue)}</h3>
-                <p>Average Transaction</p>
+                <p>{t("admin.averageTransaction")}</p>
               </div>
               <div className="stat-card">
                 <h3>{highRiskTransactions.length}</h3>
-                <p>High-Risk Flagged</p>
+                <p>{t("admin.highRiskFlagged")}</p>
               </div>
             </div>
 
             <div className="admin-table" style={{ marginTop: "18px" }}>
-              <h2>Recent Transactions</h2>
+              <h2>{t("admin.recentTransactions")}</h2>
               {orders.length === 0 ? (
-                <p className="empty-text">No transactions yet.</p>
+                <p className="empty-text">{t("admin.noTransactions")}</p>
               ) : (
                 <table>
                   <thead>
                     <tr>
-                      <th>Order ID</th>
-                      <th>Customer</th>
-                      <th>Date</th>
-                      <th>Items</th>
-                      <th>Total</th>
-                      <th>Status</th>
+                      <th>{t("admin.orderId")}</th>
+                      <th>{t("admin.customer")}</th>
+                      <th>{t("admin.date")}</th>
+                      <th>{t("admin.items")}</th>
+                      <th>{t("admin.total")}</th>
+                      <th>{t("admin.statusLabel")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -436,7 +438,7 @@ function AdminDashboard() {
                           <td>₹{order.total}</td>
                           <td>
                             <span className={highRisk ? "badge danger" : "badge success"}>
-                              {highRisk ? "Review" : "Normal"}
+                              {highRisk ? t("admin.review") : t("admin.normal")}
                             </span>
                           </td>
                         </tr>
@@ -451,49 +453,49 @@ function AdminDashboard() {
 
         {activeTab === "security" && (
           <div>
-            <h1 className="admin-title">Maintain Platform Security</h1>
+            <h1 className="admin-title">{t("admin.securityTitle")}</h1>
 
             <div className="admin-stats">
               <div className="stat-card">
                 <h3>{blockedUsersCount}</h3>
-                <p>Blocked Accounts</p>
+                <p>{t("admin.blockedAccounts")}</p>
               </div>
               <div className="stat-card">
                 <h3>{highRiskTransactions.length}</h3>
-                <p>Transactions to Review</p>
+                <p>{t("admin.transactionsToReview")}</p>
               </div>
               <div className="stat-card">
-                <h3>{localStorage.getItem("user") ? "Active" : "None"}</h3>
-                <p>Current Session</p>
+                <h3>{localStorage.getItem("user") ? t("admin.active") : t("admin.none")}</h3>
+                <p>{t("admin.currentSession")}</p>
               </div>
             </div>
 
             <div className="security-actions">
               <button className="block-btn" onClick={forceLogout}>
-                Force Logout Current Session
+                {t("admin.forceLogout")}
               </button>
               <button className="block-btn" onClick={clearCartCache}>
-                Clear Cart Cache
+                {t("admin.clearCartCache")}
               </button>
               <button className="delete-btn" onClick={clearClosedDisputes}>
-                Clean Closed Disputes
+                {t("admin.cleanClosedDisputes")}
               </button>
             </div>
 
             <div className="admin-table" style={{ marginTop: "16px" }}>
-              <h2>Flagged Transaction Review Queue</h2>
+              <h2>{t("admin.flaggedQueue")}</h2>
               {highRiskTransactions.length === 0 ? (
-                <p className="empty-text">No high-risk transactions detected.</p>
+                <p className="empty-text">{t("admin.noHighRisk")}</p>
               ) : (
                 highRiskTransactions.map((order) => (
                   <div key={order.id} className="security-row">
                     <div>
-                      <strong>Order #{order.id}</strong>
+                      <strong>{t("orders.order", "Order")} #{order.id}</strong>
                       <p>
-                        User: {order.username} • Total: ₹{order.total}
+                        {t("admin.user")}: {order.username} • {t("admin.total")}: ₹{order.total}
                       </p>
                     </div>
-                    <span className="badge danger">Needs Review</span>
+                    <span className="badge danger">{t("admin.needsReview")}</span>
                   </div>
                 ))
               )}
@@ -503,29 +505,29 @@ function AdminDashboard() {
 
         {activeTab === "disputes" && (
           <div>
-            <h1 className="admin-title">Handle Dispute Resolution</h1>
+            <h1 className="admin-title">{t("admin.handleDisputes")}</h1>
 
             <div className="admin-form-card">
-              <h2>Create Dispute Case</h2>
+              <h2>{t("admin.createDisputeCase")}</h2>
               <form className="admin-form" onSubmit={createDispute}>
                 <input
                   type="text"
                   name="orderId"
-                  placeholder="Order ID"
+                  placeholder={t("admin.orderId")}
                   value={disputeForm.orderId}
                   onChange={handleDisputeField}
                 />
                 <input
                   type="text"
                   name="customer"
-                  placeholder="Customer username"
+                  placeholder={t("admin.customerUsername")}
                   value={disputeForm.customer}
                   onChange={handleDisputeField}
                 />
                 <input
                   type="text"
                   name="issue"
-                  placeholder="Issue summary"
+                  placeholder={t("admin.issueSummary")}
                   value={disputeForm.issue}
                   onChange={handleDisputeField}
                 />
@@ -535,19 +537,19 @@ function AdminDashboard() {
                   onChange={handleDisputeField}
                   className="admin-select"
                 >
-                  <option value="low">Low Priority</option>
-                  <option value="medium">Medium Priority</option>
-                  <option value="high">High Priority</option>
+                  <option value="low">{t("admin.lowPriority")}</option>
+                  <option value="medium">{t("admin.mediumPriority")}</option>
+                  <option value="high">{t("admin.highPriority")}</option>
                 </select>
-                <button type="submit">Create Case</button>
+                <button type="submit">{t("admin.createCase")}</button>
               </form>
             </div>
 
             <div className="admin-table">
-              <h2>Dispute Queue ({pendingDisputes.length} open)</h2>
+              <h2>{t("admin.disputeQueue")} ({pendingDisputes.length} {t("admin.openSuffix")})</h2>
 
               {disputes.length === 0 ? (
-                <p className="empty-text">No disputes created yet.</p>
+                <p className="empty-text">{t("admin.noDisputes")}</p>
               ) : (
                 disputes.map((entry) => (
                   <div key={entry.id} className="dispute-card">
@@ -561,17 +563,17 @@ function AdminDashboard() {
                     </div>
                     <p>{entry.issue}</p>
                     <p>
-                      Priority: <strong>{entry.priority}</strong> • Created: {entry.createdAt}
+                      {t("admin.priorityLabel")}: <strong>{entry.priority}</strong> • {t("admin.createdLabel")}: {entry.createdAt}
                     </p>
                     <div className="user-actions">
                       <button className="block-btn" onClick={() => updateDisputeStatus(entry.id, "in-review")}>
-                        In Review
+                        {t("admin.inReview")}
                       </button>
                       <button className="block-btn" onClick={() => updateDisputeStatus(entry.id, "resolved")}>
-                        Resolve
+                        {t("admin.resolve")}
                       </button>
                       <button className="delete-btn" onClick={() => updateDisputeStatus(entry.id, "closed")}>
-                        Close
+                        {t("admin.close")}
                       </button>
                     </div>
                   </div>

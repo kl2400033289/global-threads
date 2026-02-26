@@ -1,9 +1,11 @@
 import "./Login.css";   // reuse SAME CSS
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useLanguage } from "../context/LanguageContext";
 
 function Signup() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -24,17 +26,17 @@ function Signup() {
     e.preventDefault();
 
     if (form.username.trim().length < 3) {
-      setMessage({ text: "Username must be at least 3 characters", type: "error" });
+      setMessage({ text: t("signup.usernameMin"), type: "error" });
       return;
     }
 
     if (form.password.length < 6) {
-      setMessage({ text: "Password must be at least 6 characters", type: "error" });
+      setMessage({ text: t("signup.passwordMin"), type: "error" });
       return;
     }
 
     if (form.password !== confirmPassword) {
-      setMessage({ text: "Passwords do not match", type: "error" });
+      setMessage({ text: t("signup.passwordMismatch"), type: "error" });
       return;
     }
 
@@ -48,7 +50,7 @@ function Signup() {
     );
 
     if (exists) {
-      setMessage({ text: "User already exists", type: "error" });
+      setMessage({ text: t("signup.userExists"), type: "error" });
       return;
     }
 
@@ -61,7 +63,7 @@ function Signup() {
 
     localStorage.setItem("users", JSON.stringify(users));
 
-    setMessage({ text: "Account created successfully! Redirecting...", type: "success" });
+    setMessage({ text: t("signup.accountCreated"), type: "success" });
 
     // redirect to login after signup
     setTimeout(() => {
@@ -72,43 +74,43 @@ function Signup() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <p className="auth-badge">Create Account</p>
-        <h1 className="auth-title">Join Global Threads</h1>
+        <p className="auth-badge">{t("signup.createAccount")}</p>
+        <h1 className="auth-title">{t("signup.title")}</h1>
         <p className="auth-subtitle">
-          Build your profile to buy, sell, and grow with heritage fashion.
+          {t("signup.subtitle")}
         </p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <label htmlFor="signup-username">Username</label>
+          <label htmlFor="signup-username">{t("signup.username")}</label>
           <input
             id="signup-username"
             type="text"
             name="username"
-            placeholder="Choose username"
+            placeholder={t("signup.chooseUsername")}
             value={form.username}
             onChange={handleChange}
             required
           />
 
-          <label htmlFor="signup-role">Role</label>
+          <label htmlFor="signup-role">{t("signup.role")}</label>
           <select
             id="signup-role"
             name="role"
             value={form.role}
             onChange={handleChange}
           >
-            <option value="buyer">Buyer</option>
-            <option value="artisan">Artisan</option>
-            <option value="marketing">Marketing</option>
+            <option value="buyer">{t("signup.buyer")}</option>
+            <option value="artisan">{t("signup.artisan")}</option>
+            <option value="marketing">{t("signup.marketing")}</option>
           </select>
 
-          <label htmlFor="signup-password">Password</label>
+          <label htmlFor="signup-password">{t("signup.password")}</label>
           <div className="password-row">
             <input
               id="signup-password"
               type={showPassword ? "text" : "password"}
               name="password"
-              placeholder="Create password"
+              placeholder={t("signup.createPassword")}
               value={form.password}
               onChange={handleChange}
               required
@@ -118,15 +120,15 @@ function Signup() {
               className="toggle-btn"
               onClick={() => setShowPassword((prev) => !prev)}
             >
-              {showPassword ? "Hide" : "Show"}
+              {showPassword ? t("login.hide") : t("login.show")}
             </button>
           </div>
 
-          <label htmlFor="signup-confirm-password">Confirm Password</label>
+          <label htmlFor="signup-confirm-password">{t("signup.confirmPassword")}</label>
           <input
             id="signup-confirm-password"
             type={showPassword ? "text" : "password"}
-            placeholder="Confirm password"
+            placeholder={t("signup.confirmPasswordPlaceholder")}
             value={confirmPassword}
             onChange={(e) => {
               setMessage({ text: "", type: "" });
@@ -146,13 +148,13 @@ function Signup() {
           )}
 
           <button type="submit" className="primary-btn auth-submit">
-            Create Account
+            {t("signup.submit")}
           </button>
         </form>
 
         <p className="switch-auth-text">
-          Already have an account?
-          <span onClick={() => navigate("/login")}> Login</span>
+          {t("signup.alreadyHave")}
+          <span onClick={() => navigate("/login")}> {t("signup.login")}</span>
         </p>
       </div>
     </div>

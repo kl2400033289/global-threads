@@ -1,10 +1,12 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
 import "./Cart.css";
 
 function Cart() {
   const { cart, removeFromCart, updateQty } = useContext(CartContext);
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const total = cart.reduce(
@@ -15,10 +17,10 @@ function Cart() {
 
   return (
     <div className="cart-page">
-      <h1>Your Cart</h1>
+      <h1>{t("cart.title")}</h1>
 
       {cart.length === 0 ? (
-        <p className="cart-empty">Your cart is empty</p>
+        <p className="cart-empty">{t("cart.empty")}</p>
       ) : (
         <>
           {cart.map((item) => (
@@ -43,16 +45,16 @@ function Cart() {
                   className="remove-btn"
                   onClick={() => removeFromCart(item.id)}
                 >
-                  Remove
+                  {t("cart.remove")}
                 </button>
               </div>
             </div>
           ))}
 
           <div className="cart-footer">
-            <h2 className="cart-total">Total: ₹{total}</h2>
+            <h2 className="cart-total">{t("cart.total")}: ₹{total}</h2>
             <button className="checkout-btn" onClick={() => navigate("/checkout")}>
-              Proceed to Checkout
+              {t("cart.proceed")}
             </button>
           </div>
         </>

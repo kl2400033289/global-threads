@@ -3,12 +3,14 @@ import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
 import "./Navbar.css";
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const { cart } = useContext(CartContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const { lang, setLang, t, languages } = useLanguage();
 
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
   const dashboardPath = user ? `/${user.role}` : "/login";
@@ -22,36 +24,51 @@ function Navbar() {
 
       <ul className="nav-links">
         <li>
-          <Link to="/">Home</Link>
+          <Link to="/">{t("nav.home", "Home")}</Link>
         </li>
         <li>
-          <Link to="/shop">Shop</Link>
+          <Link to="/shop">{t("nav.shop", "Shop")}</Link>
         </li>
         <li>
-          <Link to={dashboardPath}>Dashboard</Link>
+          <Link to={dashboardPath}>{t("nav.dashboard", "Dashboard")}</Link>
         </li>
         {!user && (
           <>
             <li>
-              <Link to="/login">Login</Link>
+              <Link to="/login">{t("nav.login", "Login")}</Link>
             </li>
             <li>
-              <Link to="/signup">Signup</Link>
+              <Link to="/signup">{t("nav.signup", "Signup")}</Link>
             </li>
           </>
         )}
         {user?.role === "buyer" && (
           <li>
-            <Link to="/orders">Orders</Link>
+            <Link to="/orders">{t("nav.orders", "Orders")}</Link>
           </li>
         )}
       </ul>
+
+      <div className="language-select-wrap">
+        <label htmlFor="global-lang">{t("common.language", "Language")}</label>
+        <select
+          id="global-lang"
+          value={lang}
+          onChange={(e) => setLang(e.target.value)}
+        >
+          {languages.map((option) => (
+            <option key={option.code} value={option.code}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* 🌗 Theme Toggle */}
       <button
         className="theme-toggle"
         onClick={toggleTheme}
-        aria-label="Toggle theme"
+        aria-label={t("nav.themeToggle", "Toggle theme")}
       >
         {theme === "light" ? "🌙" : "☀️"}
       </button>
@@ -73,7 +90,7 @@ function Navbar() {
             </span>
 
             <button className="logout-btn" onClick={logout}>
-              Logout
+              {t("nav.logout", "Logout")}
             </button>
           </div>
         )}

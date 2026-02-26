@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { OrderContext } from "../context/OrderContext";
 import { AuthContext } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 import "./Payment.css";
 
 function Payment() {
@@ -11,6 +12,7 @@ function Payment() {
   const { cart, clearCart } = useContext(CartContext);
   const { addOrder } = useContext(OrderContext);
   const { user } = useContext(AuthContext);
+  const { t } = useLanguage();
 
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +37,7 @@ function Payment() {
       addOrder(newOrder);
       clearCart();
 
-      alert("✅ Payment Successful!");
+      alert(`✅ ${t("payment.success")}`);
       navigate("/");
     }, 2000);
   };
@@ -43,10 +45,10 @@ function Payment() {
   return (
     <div className="payment-page">
       <div className="payment-card">
-        <h1>💳 Payment</h1>
+        <h1>💳 {t("payment.title")}</h1>
 
         <div className="payment-summary">
-          <h3>Total Amount</h3>
+          <h3>{t("payment.totalAmount")}</h3>
           <h2>₹{total}</h2>
         </div>
 
@@ -55,7 +57,7 @@ function Payment() {
           onClick={handlePayment}
           disabled={loading}
         >
-          {loading ? "Processing..." : "Pay Now"}
+          {loading ? t("payment.processing") : t("payment.payNow")}
         </button>
       </div>
     </div>

@@ -2,8 +2,7 @@ import { useContext, useMemo, useState } from "react";
 import { ProductContext } from "../context/ProductContext";
 import { OrderContext } from "../context/OrderContext";
 import { AuthContext } from "../context/AuthContext";
-import { LanguageContext } from "../context/LanguageContext";
-import { translations } from "../i18n/translations";
+import { useLanguage } from "../context/LanguageContext";
 import "./ArtisanDashboard.css";
 
 const defaultImage = "https://via.placeholder.com/300x300?text=Product";
@@ -21,12 +20,11 @@ function ArtisanDashboard() {
   const { products, setProducts } = useContext(ProductContext);
   const { orders } = useContext(OrderContext);
   const { user } = useContext(AuthContext);
-  const { lang, setLang } = useContext(LanguageContext);
+  const { lang, setLang, t, languages } = useLanguage();
 
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
 
-  const t = translations[lang] || translations.EN;
   const currentArtisan = user?.username?.trim().toLowerCase();
 
   const artisanProducts = useMemo(
@@ -191,16 +189,17 @@ function ArtisanDashboard() {
         </div>
 
         <div className="artisan-language">
-          <label htmlFor="artisan-lang">Language</label>
+          <label htmlFor="artisan-lang">{t("common.language", "Language")}</label>
           <select
             id="artisan-lang"
             value={lang}
             onChange={(e) => setLang(e.target.value)}
           >
-            <option value="EN">EN</option>
-            <option value="HI">हिंदी</option>
-            <option value="TE">తెలుగు</option>
-            <option value="OR">ଓଡ଼ିଆ</option>
+            {languages.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>

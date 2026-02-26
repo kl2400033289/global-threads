@@ -1,11 +1,13 @@
 import { useContext, useMemo } from "react";
 import { ProductContext } from "../context/ProductContext";
 import { OrderContext } from "../context/OrderContext";
+import { useLanguage } from "../context/LanguageContext";
 import "./MarketingDashboard.css";
 
 function MarketingDashboard() {
   const { products } = useContext(ProductContext);
   const { orders } = useContext(OrderContext);
+  const { t } = useLanguage();
 
   const totalRevenue = useMemo(
     () => orders.reduce((sum, order) => sum + (order.total || 0), 0),
@@ -88,9 +90,9 @@ function MarketingDashboard() {
       let demand = "Low";
 
       if (ratio >= 0.7) {
-        demand = "High";
+        demand = t("marketing.high");
       } else if (ratio >= 0.35) {
-        demand = "Medium";
+        demand = t("marketing.medium");
       }
 
       return { ...product, demand };
@@ -112,11 +114,11 @@ function MarketingDashboard() {
     const conversionProxy =
       activeCustomers > 0 ? (ordersCount / activeCustomers) * 100 : 0;
 
-    let engagementLevel = "Low";
+    let engagementLevel = t("marketing.low");
     if (ordersCount >= 10 && avgItemsPerOrder >= 2) {
-      engagementLevel = "High";
+      engagementLevel = t("marketing.high");
     } else if (ordersCount >= 4) {
-      engagementLevel = "Medium";
+      engagementLevel = t("marketing.medium");
     }
 
     return {
@@ -164,16 +166,16 @@ function MarketingDashboard() {
     }
 
     await navigator.clipboard.writeText(text);
-    alert(`Campaign text copied for ${platform.toUpperCase()} 📣`);
+    alert(`${t("marketing.campaignCopied")} ${platform.toUpperCase()} 📣`);
   };
 
   return (
     <div className="marketing-page">
-      <h1 className="marketing-title">📢 Marketing Dashboard</h1>
+      <h1 className="marketing-title">📢 {t("marketing.title")}</h1>
 
       <div className="marketing-section">
-        <h2>Promote products via social media</h2>
-        <p>Use ready campaign lines and share products instantly.</p>
+        <h2>{t("marketing.promoteTitle")}</h2>
+        <p>{t("marketing.promoteDesc")}</p>
 
         <div className="marketing-product-grid">
           {products.map((product) => (
@@ -198,40 +200,40 @@ function MarketingDashboard() {
       </div>
 
       <div className="marketing-section">
-        <h2>Analyze customer behavior</h2>
+        <h2>{t("marketing.analyzeTitle")}</h2>
 
         <div className="marketing-stats-grid">
           <div className="marketing-stat-card">
             <h3>{customerStats.uniqueCustomers}</h3>
-            <p>Unique Customers</p>
+            <p>{t("marketing.uniqueCustomers")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{customerStats.newCustomers}</h3>
-            <p>New Customers</p>
+            <p>{t("marketing.newCustomers")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{customerStats.repeatCustomers}</h3>
-            <p>Repeat Customers</p>
+            <p>{t("marketing.repeatCustomers")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{customerStats.avgOrdersPerCustomer.toFixed(1)}</h3>
-            <p>Avg Orders / Customer</p>
+            <p>{t("marketing.avgOrdersCustomer")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{formatMoney(customerStats.avgOrderValue)}</h3>
-            <p>Average Order Value</p>
+            <p>{t("marketing.averageOrderValue")}</p>
           </div>
         </div>
 
         <div className="marketing-list-card">
-          <h3>Top Customers</h3>
+          <h3>{t("marketing.topCustomers")}</h3>
           {customerStats.topCustomers.length === 0 ? (
-            <p>No customer history yet.</p>
+            <p>{t("marketing.noCustomerHistory")}</p>
           ) : (
             customerStats.topCustomers.map(([username, orderCount]) => (
               <div key={username} className="marketing-list-row">
                 <span>{username}</span>
-                <strong>{orderCount} orders</strong>
+                <strong>{orderCount} {t("marketing.ordersSuffix")}</strong>
               </div>
             ))
           )}
@@ -239,37 +241,37 @@ function MarketingDashboard() {
       </div>
 
       <div className="marketing-section">
-        <h2>Track trends and demand</h2>
+        <h2>{t("marketing.trendsTitle")}</h2>
 
         <div className="marketing-stats-grid">
           <div className="marketing-stat-card">
             <h3>{formatMoney(totalRevenue)}</h3>
-            <p>Total Revenue</p>
+            <p>{t("marketing.totalRevenue")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{orders.length}</h3>
-            <p>Total Orders</p>
+            <p>{t("marketing.totalOrders")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{totalItemsSold}</h3>
-            <p>Items Sold</p>
+            <p>{t("marketing.itemsSold")}</p>
           </div>
           <div className="marketing-stat-card">
-            <h3>{demandStats.trendingProduct?.name || "N/A"}</h3>
-            <p>Trending Product</p>
+            <h3>{demandStats.trendingProduct?.name || t("marketing.na")}</h3>
+            <p>{t("marketing.trendingProduct")}</p>
           </div>
         </div>
 
         <div className="marketing-list-card">
-          <h3>Demand by Product</h3>
+          <h3>{t("marketing.demandByProduct")}</h3>
           {demandStats.rankedProducts.length === 0 ? (
-            <p>No demand data available yet.</p>
+            <p>{t("marketing.noDemandData")}</p>
           ) : (
             demandStats.rankedProducts.map((product) => (
               <div key={product.id} className="marketing-list-row">
                 <span>{product.name}</span>
                 <strong>
-                  {product.qty} sold • {product.demand} demand
+                  {product.qty} {t("marketing.soldSuffix")} • {product.demand} {t("marketing.demandSuffix")}
                 </strong>
               </div>
             ))
@@ -278,44 +280,44 @@ function MarketingDashboard() {
       </div>
 
       <div className="marketing-section">
-        <h2>Improve platform engagement</h2>
+        <h2>{t("marketing.engagementTitle")}</h2>
 
         <div className="marketing-stats-grid">
           <div className="marketing-stat-card">
             <h3>{engagement.activeProducts}</h3>
-            <p>Active Products</p>
+            <p>{t("marketing.activeProducts")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{engagement.activeCustomers}</h3>
-            <p>Engaged Customers</p>
+            <p>{t("marketing.engagedCustomers")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{engagement.avgItemsPerOrder.toFixed(1)}</h3>
-            <p>Avg Items / Order</p>
+            <p>{t("marketing.avgItemsOrder")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{engagement.conversionProxy.toFixed(0)}%</h3>
-            <p>Order Conversion Proxy</p>
+            <p>{t("marketing.orderConversion")}</p>
           </div>
           <div className="marketing-stat-card">
             <h3>{engagement.engagementLevel}</h3>
-            <p>Engagement Level</p>
+            <p>{t("marketing.engagementLevel")}</p>
           </div>
         </div>
 
         <div className="marketing-list-card">
-          <h3>Recommended Actions</h3>
+          <h3>{t("marketing.recommendedActions")}</h3>
           <div className="marketing-list-row">
-            <span>Boost top-demand products weekly</span>
-            <strong>{demandStats.rankedProducts.length > 0 ? "Priority" : "Pending"}</strong>
+            <span>{t("marketing.boostDemand")}</span>
+            <strong>{demandStats.rankedProducts.length > 0 ? t("marketing.priority") : t("marketing.pending")}</strong>
           </div>
           <div className="marketing-list-row">
-            <span>Run retention campaign for repeat customers</span>
-            <strong>{customerStats.repeatCustomers > 0 ? "Ready" : "Build Base"}</strong>
+            <span>{t("marketing.retentionCampaign")}</span>
+            <strong>{customerStats.repeatCustomers > 0 ? t("marketing.ready") : t("marketing.buildBase")}</strong>
           </div>
           <div className="marketing-list-row">
-            <span>Increase discovery for low-demand products</span>
-            <strong>{demandStats.rankedProducts.length > 2 ? "Needed" : "Not Yet"}</strong>
+            <span>{t("marketing.lowDemandDiscovery")}</span>
+            <strong>{demandStats.rankedProducts.length > 2 ? t("marketing.needed") : t("marketing.notYet")}</strong>
           </div>
         </div>
       </div>

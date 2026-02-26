@@ -19,18 +19,24 @@ export function ProductProvider({ children }) {
             name: "Handloom Saree",
             price: 2499,
             image: sareeImg,
+            rating: 4.5,
+            reviews: []
           },
           {
             id: 2,
             name: "Cotton Kurta",
             price: 1499,
             image: kurtaImg,
+            rating: 3.2,
+            reviews: []
           },
           {
             id: 3,
             name: "Silk Dupatta",
             price: 899,
             image: dupattaImg,
+            rating: 4.0,
+            reviews: []
           },
         ];
   });

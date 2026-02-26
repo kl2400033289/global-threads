@@ -1,8 +1,11 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
+import { AuthContext } from "./AuthContext";
 
 export const CartContext = createContext();
 
 export function CartProvider({ children }) {
+  const { user } = useContext(AuthContext);
+
   // ✅ load from localStorage
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem("cart");
@@ -14,32 +17,40 @@ export function CartProvider({ children }) {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
+  // 🔐 AUTO CLEAR when user logs out ⭐⭐⭐
+  useEffect(() => {
+    if (!user) {
+      setCart([]);
+      localStorage.removeItem("cart");
+    }
+  }, [user]);
+
   // 🔹 add to cart
   const addToCart = (product) => {
-    const existing = cart.find((item) => item.id === product.id);
+    setCart((prevCart) => {
+      const existing = prevCart.find((item) => item.id === product.id);
 
-    if (existing) {
-      setCart(
-        cart.map((item) =>
+      if (existing) {
+        return prevCart.map((item) =>
           item.id === product.id
             ? { ...item, qty: item.qty + 1 }
             : item
-        )
-      );
-    } else {
-      setCart([...cart, { ...product, qty: 1 }]);
-    }
+        );
+      }
+
+      return [...prevCart, { ...product, qty: 1 }];
+    });
   };
 
   // 🔹 remove item
   const removeFromCart = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
 
   // 🔹 change quantity
   const updateQty = (id, delta) => {
-    setCart(
-      cart.map((item) =>
+    setCart((prevCart) =>
+      prevCart.map((item) =>
         item.id === id
           ? { ...item, qty: Math.max(1, item.qty + delta) }
           : item
@@ -47,9 +58,10 @@ export function CartProvider({ children }) {
     );
   };
 
-  // ⭐⭐⭐ ADD THIS (missing earlier)
+  // 🔹 manual clear (still useful)
   const clearCart = () => {
     setCart([]);
+    localStorage.removeItem("cart");
   };
 
   return (

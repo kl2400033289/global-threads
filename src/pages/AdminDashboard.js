@@ -1,173 +1,281 @@
 import "./AdminDashboard.css";
-import { useState, useContext } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import { Link } from "react-router-dom";
+
 import { ProductContext } from "../context/ProductContext";
+import { OrderContext } from "../context/OrderContext";
+import { UserContext } from "../context/UserContext";
+import { useLanguage } from "../context/LanguageContext";
 
 function AdminDashboard() {
-  // ✅ global products
   const { products, setProducts } = useContext(ProductContext);
+  const { orders } = useContext(OrderContext);
+  const { users, removeUser, toggleBlockUser } = useContext(UserContext);
+  const { t } = useLanguage();
 
-  // ✅ active sidebar tab
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [preview, setPreview] = useState("");
 
-  // ✅ form state
   const [form, setForm] = useState({
     name: "",
     price: "",
     image: "",
   });
 
-  const [preview, setPreview] = useState("");
+  const [disputeForm, setDisputeForm] = useState({
+    orderId: "",
+    customer: "",
+    issue: "",
+    priority: "medium",
+  });
 
-  // ===============================
-  // 🔹 HANDLE INPUT
-  // ===============================
+  const [disputes, setDisputes] = useState(() => {
+    const saved = localStorage.getItem("disputes");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("disputes", JSON.stringify(disputes));
+  }, [disputes]);
+
+  const buyers = useMemo(
+    () => users.filter((entry) => entry.role === "buyer"),
+    [users]
+  );
+
+  const artisans = useMemo(
+    () => users.filter((entry) => entry.role === "artisan"),
+    [users]
+  );
+
+  const totalRevenue = useMemo(
+    () => orders.reduce((sum, order) => sum + (order.total || 0), 0),
+    [orders]
+  );
+
+  const avgOrderValue = useMemo(
+    () => (orders.length > 0 ? totalRevenue / orders.length : 0),
+    [orders.length, totalRevenue]
+  );
+
+  const blockedUsersCount = useMemo(
+    () => users.filter((entry) => entry.blocked).length,
+    [users]
+  );
+
+  const highRiskTransactions = useMemo(
+    () =>
+      orders.filter(
+        (order) =>
+          Number(order.total) >= 10000 ||
+          (order.items?.reduce((count, item) => count + (item.qty || 0), 0) || 0) >= 6
+      ),
+    [orders]
+  );
+
+  const pendingDisputes = useMemo(
+    () => disputes.filter((item) => item.status !== "resolved" && item.status !== "closed"),
+    [disputes]
+  );
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // ===============================
-  // 🔹 IMAGE UPLOAD
-  // ===============================
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     const reader = new FileReader();
-
     reader.onloadend = () => {
-      setForm({ ...form, image: reader.result });
+      setForm((prev) => ({ ...prev, image: reader.result }));
       setPreview(reader.result);
     };
-
     reader.readAsDataURL(file);
   };
 
-  // ===============================
-  // 🔹 ADD PRODUCT
-  // ===============================
   const addProduct = (e) => {
     e.preventDefault();
-
-    if (!form.name || !form.price) return;
+    if (!form.name || !form.price) {
+      return;
+    }
 
     const newProduct = {
       id: Date.now(),
       name: form.name,
       price: Number(form.price),
-      image: form.image || "/assets/placeholder.png",
+      image: form.image || "https://via.placeholder.com/300x300?text=Product",
+      rating: 0,
+      reviews: [],
     };
 
-    setProducts([...products, newProduct]);
-
+    setProducts((prev) => [...prev, newProduct]);
     setForm({ name: "", price: "", image: "" });
     setPreview("");
   };
 
-  // ===============================
-  // 🔹 DELETE PRODUCT
-  // ===============================
   const deleteProduct = (id) => {
-    setProducts(products.filter((p) => p.id !== id));
+    setProducts((prev) => prev.filter((product) => product.id !== id));
+  };
+
+  const handleDisputeField = (e) => {
+    setDisputeForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const createDispute = (e) => {
+    e.preventDefault();
+
+    if (!disputeForm.orderId.trim() || !disputeForm.customer.trim() || !disputeForm.issue.trim()) {
+      return;
+    }
+
+    const newDispute = {
+      id: Date.now(),
+      orderId: disputeForm.orderId.trim(),
+      customer: disputeForm.customer.trim(),
+      issue: disputeForm.issue.trim(),
+      priority: disputeForm.priority,
+      status: "open",
+      createdAt: new Date().toLocaleString(),
+    };
+
+    setDisputes((prev) => [newDispute, ...prev]);
+    setDisputeForm({
+      orderId: "",
+      customer: "",
+      issue: "",
+      priority: "medium",
+    });
+  };
+
+  const updateDisputeStatus = (id, status) => {
+    setDisputes((prev) =>
+      prev.map((entry) => (entry.id === id ? { ...entry, status } : entry))
+    );
+  };
+
+  const clearClosedDisputes = () => {
+    setDisputes((prev) => prev.filter((entry) => entry.status !== "closed"));
+  };
+
+  const forceLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("cart");
+    alert(t("admin.sessionCleared"));
+  };
+
+  const clearCartCache = () => {
+    localStorage.removeItem("cart");
+    alert(t("admin.cartCacheCleared"));
   };
 
   return (
- <div className="admin-layout">
-  <div className="admin-layout admin-light"></div>
-      {/* ================= SIDEBAR ================= */}
+    <div className="admin-layout admin-light">
       <aside className="sidebar">
-        <h2 className="sidebar-logo">🌍 Admin</h2>
+        <h2 className="sidebar-logo">🌍 {t("admin.sidebarTitle")}</h2>
 
         <ul className="sidebar-menu">
           <li
             className={activeTab === "dashboard" ? "active" : ""}
             onClick={() => setActiveTab("dashboard")}
           >
-            📊 Dashboard
+            📊 {t("admin.tabDashboard")}
           </li>
 
           <li
             className={activeTab === "products" ? "active" : ""}
             onClick={() => setActiveTab("products")}
           >
-            📦 Products
+            📦 {t("admin.tabProducts")}
           </li>
 
           <li
-            className={activeTab === "artisans" ? "active" : ""}
-            onClick={() => setActiveTab("artisans")}
+            className={activeTab === "accounts" ? "active" : ""}
+            onClick={() => setActiveTab("accounts")}
           >
-            🧵 Artisans
+            👥 {t("admin.tabAccounts")}
           </li>
 
           <li
-            className={activeTab === "orders" ? "active" : ""}
-            onClick={() => setActiveTab("orders")}
+            className={activeTab === "transactions" ? "active" : ""}
+            onClick={() => setActiveTab("transactions")}
           >
-            🛒 Orders
+            🧾 {t("admin.tabTransactions")}
           </li>
 
           <li
-            className={activeTab === "users" ? "active" : ""}
-            onClick={() => setActiveTab("users")}
+            className={activeTab === "security" ? "active" : ""}
+            onClick={() => setActiveTab("security")}
           >
-            👥 Users
+            🔐 {t("admin.tabSecurity")}
           </li>
 
           <li
-            className={activeTab === "settings" ? "active" : ""}
-            onClick={() => setActiveTab("settings")}
+            className={activeTab === "disputes" ? "active" : ""}
+            onClick={() => setActiveTab("disputes")}
           >
-            ⚙️ Settings
+            ⚖️ {t("admin.tabDisputes")}
           </li>
         </ul>
 
         <Link to="/" className="back-home">
-          ⬅ Back to Site
+          ⬅ {t("admin.backToSite")}
         </Link>
       </aside>
 
-      {/* ================= MAIN ================= */}
       <main className="admin-main">
-
-        {/* ================= DASHBOARD ================= */}
         {activeTab === "dashboard" && (
           <>
             <h1 className="admin-title">Admin Dashboard</h1>
 
             <div className="admin-stats">
               <div className="stat-card">
-                <h3>{products.length}</h3>
-                <p>Total Products</p>
+                <h3>{users.length}</h3>
+                <p>{t("admin.totalAccounts")}</p>
               </div>
 
               <div className="stat-card">
-                <h3>₹0</h3>
-                <p>Total Revenue</p>
+                <h3>{buyers.length}</h3>
+                <p>{t("admin.buyerAccounts")}</p>
               </div>
 
               <div className="stat-card">
-                <h3>0</h3>
-                <p>Total Orders</p>
+                <h3>{artisans.length}</h3>
+                <p>{t("admin.artisanAccounts")}</p>
+              </div>
+
+              <div className="stat-card">
+                <h3>{orders.length}</h3>
+                <p>{t("admin.totalTransactions")}</p>
+              </div>
+
+              <div className="stat-card">
+                <h3>₹{totalRevenue}</h3>
+                <p>{t("admin.revenue")}</p>
+              </div>
+
+              <div className="stat-card">
+                <h3>{pendingDisputes.length}</h3>
+                <p>{t("admin.openDisputes")}</p>
               </div>
             </div>
           </>
         )}
 
-        {/* ================= PRODUCTS ================= */}
         {activeTab === "products" && (
           <>
-            <h1 className="admin-title">Product Management</h1>
+            <h1 className="admin-title">{t("admin.productTitle")}</h1>
 
-            {/* ===== ADD PRODUCT ===== */}
             <div className="admin-form-card">
-              <h2>Add New Product</h2>
+              <h2>{t("admin.addNewProduct")}</h2>
 
               <form onSubmit={addProduct} className="admin-form">
                 <input
                   type="text"
                   name="name"
-                  placeholder="Product name"
+                  placeholder={t("admin.productName")}
                   value={form.name}
                   onChange={handleChange}
                 />
@@ -175,67 +283,31 @@ function AdminDashboard() {
                 <input
                   type="number"
                   name="price"
-                  placeholder="Price"
+                  placeholder={t("admin.price")}
                   value={form.price}
                   onChange={handleChange}
                 />
 
-                {/* ✅ FILE PICKER */}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                />
+                <input type="file" accept="image/*" onChange={handleImageUpload} />
 
-                {/* ✅ IMAGE PREVIEW */}
-                {preview && (
-                  <img
-                    src={preview}
-                    alt="preview"
-                    className="image-preview"
-                  />
-                )}
+                {preview && <img src={preview} alt="preview" className="image-preview" />}
 
-                <button type="submit">➕ Add Product</button>
+                <button type="submit">➕ {t("admin.addProduct")}</button>
               </form>
             </div>
 
-            {/* ===== PRODUCT TABLE ===== */}
             <div className="admin-table">
-              <h2>All Products</h2>
+              <h2>{t("admin.allProducts")}</h2>
 
               <table>
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-
                 <tbody>
-                  {products.map((p) => (
-                    <tr key={p.id}>
+                  {products.map((product) => (
+                    <tr key={product.id}>
+                      <td>{product.name}</td>
+                      <td>₹{product.price}</td>
                       <td>
-                        <img
-                          src={p.image}
-                          alt={p.name}
-                          style={{
-                            width: "50px",
-                            borderRadius: "6px",
-                            objectFit: "cover",
-                          }}
-                        />
-                      </td>
-                      <td>{p.name}</td>
-                      <td>₹{p.price}</td>
-                      <td>
-                        <button
-                          className="delete-btn"
-                          onClick={() => deleteProduct(p.id)}
-                        >
-                          🗑 Delete
+                        <button className="delete-btn" onClick={() => deleteProduct(product.id)}>
+                          🗑 {t("admin.delete")}
                         </button>
                       </td>
                     </tr>
@@ -246,38 +318,270 @@ function AdminDashboard() {
           </>
         )}
 
-        {/* ================= ARTISANS ================= */}
-        {activeTab === "artisans" && (
+        {activeTab === "accounts" && (
           <div>
-            <h1 className="admin-title">Artisans</h1>
-            <p className="empty-text">No artisans added yet.</p>
+            <h1 className="admin-title">{t("admin.manageAccountsTitle")}</h1>
+
+            <div className="accounts-columns">
+              <section className="admin-table">
+                <h2>Artisan Accounts ({artisans.length})</h2>
+                {artisans.length === 0 ? (
+                  <p className="empty-text">{t("admin.noArtisans")}</p>
+                ) : (
+                  <div className="users-grid">
+                    {artisans.map((account) => (
+                      <div key={account.id} className="user-card">
+                        <h3>👤 {account.username}</h3>
+                        <p>
+                          <strong>{t("admin.role")}:</strong> artisan
+                        </p>
+                        <p>
+                          <strong>{t("admin.status")}:</strong> {account.blocked ? `🚫 ${t("admin.blocked")}` : `✅ ${t("admin.active")}`}
+                        </p>
+                        <div className="user-actions">
+                          <button className="block-btn" onClick={() => toggleBlockUser(account.id)}>
+                            {account.blocked ? t("admin.unblock") : t("admin.block")}
+                          </button>
+                          <button className="delete-btn" onClick={() => removeUser(account.id)}>
+                            {t("admin.delete")}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              <section className="admin-table">
+                <h2>Buyer Accounts ({buyers.length})</h2>
+                {buyers.length === 0 ? (
+                  <p className="empty-text">{t("admin.noBuyers")}</p>
+                ) : (
+                  <div className="users-grid">
+                    {buyers.map((account) => (
+                      <div key={account.id} className="user-card">
+                        <h3>👤 {account.username}</h3>
+                        <p>
+                          <strong>{t("admin.role")}:</strong> buyer
+                        </p>
+                        <p>
+                          <strong>{t("admin.status")}:</strong> {account.blocked ? `🚫 ${t("admin.blocked")}` : `✅ ${t("admin.active")}`}
+                        </p>
+                        <div className="user-actions">
+                          <button className="block-btn" onClick={() => toggleBlockUser(account.id)}>
+                            {account.blocked ? t("admin.unblock") : t("admin.block")}
+                          </button>
+                          <button className="delete-btn" onClick={() => removeUser(account.id)}>
+                            {t("admin.delete")}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
           </div>
         )}
 
-        {/* ================= ORDERS ================= */}
-        {activeTab === "orders" && (
+        {activeTab === "transactions" && (
           <div>
-            <h1 className="admin-title">Orders</h1>
-            <p className="empty-text">Order management coming soon.</p>
+            <h1 className="admin-title">{t("admin.monitorTransactions")}</h1>
+
+            <div className="admin-stats">
+              <div className="stat-card">
+                <h3>{orders.length}</h3>
+                <p>{t("admin.totalTransactions")}</p>
+              </div>
+              <div className="stat-card">
+                <h3>₹{totalRevenue}</h3>
+                <p>{t("admin.totalRevenue")}</p>
+              </div>
+              <div className="stat-card">
+                <h3>₹{Math.round(avgOrderValue)}</h3>
+                <p>{t("admin.averageTransaction")}</p>
+              </div>
+              <div className="stat-card">
+                <h3>{highRiskTransactions.length}</h3>
+                <p>{t("admin.highRiskFlagged")}</p>
+              </div>
+            </div>
+
+            <div className="admin-table" style={{ marginTop: "18px" }}>
+              <h2>{t("admin.recentTransactions")}</h2>
+              {orders.length === 0 ? (
+                <p className="empty-text">{t("admin.noTransactions")}</p>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{t("admin.orderId")}</th>
+                      <th>{t("admin.customer")}</th>
+                      <th>{t("admin.date")}</th>
+                      <th>{t("admin.items")}</th>
+                      <th>{t("admin.total")}</th>
+                      <th>{t("admin.statusLabel")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => {
+                      const qty =
+                        order.items?.reduce((count, item) => count + (item.qty || 0), 0) || 0;
+                      const highRisk = Number(order.total) >= 10000 || qty >= 6;
+
+                      return (
+                        <tr key={order.id}>
+                          <td>#{order.id}</td>
+                          <td>{order.username}</td>
+                          <td>{order.date || "-"}</td>
+                          <td>{qty}</td>
+                          <td>₹{order.total}</td>
+                          <td>
+                            <span className={highRisk ? "badge danger" : "badge success"}>
+                              {highRisk ? t("admin.review") : t("admin.normal")}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
         )}
 
-        {/* ================= USERS ================= */}
-        {activeTab === "users" && (
+        {activeTab === "security" && (
           <div>
-            <h1 className="admin-title">Users</h1>
-            <p className="empty-text">User management coming soon.</p>
+            <h1 className="admin-title">{t("admin.securityTitle")}</h1>
+
+            <div className="admin-stats">
+              <div className="stat-card">
+                <h3>{blockedUsersCount}</h3>
+                <p>{t("admin.blockedAccounts")}</p>
+              </div>
+              <div className="stat-card">
+                <h3>{highRiskTransactions.length}</h3>
+                <p>{t("admin.transactionsToReview")}</p>
+              </div>
+              <div className="stat-card">
+                <h3>{localStorage.getItem("user") ? t("admin.active") : t("admin.none")}</h3>
+                <p>{t("admin.currentSession")}</p>
+              </div>
+            </div>
+
+            <div className="security-actions">
+              <button className="block-btn" onClick={forceLogout}>
+                {t("admin.forceLogout")}
+              </button>
+              <button className="block-btn" onClick={clearCartCache}>
+                {t("admin.clearCartCache")}
+              </button>
+              <button className="delete-btn" onClick={clearClosedDisputes}>
+                {t("admin.cleanClosedDisputes")}
+              </button>
+            </div>
+
+            <div className="admin-table" style={{ marginTop: "16px" }}>
+              <h2>{t("admin.flaggedQueue")}</h2>
+              {highRiskTransactions.length === 0 ? (
+                <p className="empty-text">{t("admin.noHighRisk")}</p>
+              ) : (
+                highRiskTransactions.map((order) => (
+                  <div key={order.id} className="security-row">
+                    <div>
+                      <strong>{t("orders.order", "Order")} #{order.id}</strong>
+                      <p>
+                        {t("admin.user")}: {order.username} • {t("admin.total")}: ₹{order.total}
+                      </p>
+                    </div>
+                    <span className="badge danger">{t("admin.needsReview")}</span>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         )}
 
-        {/* ================= SETTINGS ================= */}
-        {activeTab === "settings" && (
+        {activeTab === "disputes" && (
           <div>
-            <h1 className="admin-title">Settings</h1>
-            <p className="empty-text">Admin settings panel.</p>
+            <h1 className="admin-title">{t("admin.handleDisputes")}</h1>
+
+            <div className="admin-form-card">
+              <h2>{t("admin.createDisputeCase")}</h2>
+              <form className="admin-form" onSubmit={createDispute}>
+                <input
+                  type="text"
+                  name="orderId"
+                  placeholder={t("admin.orderId")}
+                  value={disputeForm.orderId}
+                  onChange={handleDisputeField}
+                />
+                <input
+                  type="text"
+                  name="customer"
+                  placeholder={t("admin.customerUsername")}
+                  value={disputeForm.customer}
+                  onChange={handleDisputeField}
+                />
+                <input
+                  type="text"
+                  name="issue"
+                  placeholder={t("admin.issueSummary")}
+                  value={disputeForm.issue}
+                  onChange={handleDisputeField}
+                />
+                <select
+                  name="priority"
+                  value={disputeForm.priority}
+                  onChange={handleDisputeField}
+                  className="admin-select"
+                >
+                  <option value="low">{t("admin.lowPriority")}</option>
+                  <option value="medium">{t("admin.mediumPriority")}</option>
+                  <option value="high">{t("admin.highPriority")}</option>
+                </select>
+                <button type="submit">{t("admin.createCase")}</button>
+              </form>
+            </div>
+
+            <div className="admin-table">
+              <h2>{t("admin.disputeQueue")} ({pendingDisputes.length} {t("admin.openSuffix")})</h2>
+
+              {disputes.length === 0 ? (
+                <p className="empty-text">{t("admin.noDisputes")}</p>
+              ) : (
+                disputes.map((entry) => (
+                  <div key={entry.id} className="dispute-card">
+                    <div className="dispute-head">
+                      <strong>
+                        Order #{entry.orderId} • {entry.customer}
+                      </strong>
+                      <span className={`badge ${entry.status === "resolved" ? "success" : "danger"}`}>
+                        {entry.status}
+                      </span>
+                    </div>
+                    <p>{entry.issue}</p>
+                    <p>
+                      {t("admin.priorityLabel")}: <strong>{entry.priority}</strong> • {t("admin.createdLabel")}: {entry.createdAt}
+                    </p>
+                    <div className="user-actions">
+                      <button className="block-btn" onClick={() => updateDisputeStatus(entry.id, "in-review")}>
+                        {t("admin.inReview")}
+                      </button>
+                      <button className="block-btn" onClick={() => updateDisputeStatus(entry.id, "resolved")}>
+                        {t("admin.resolve")}
+                      </button>
+                      <button className="delete-btn" onClick={() => updateDisputeStatus(entry.id, "closed")}>
+                        {t("admin.close")}
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         )}
-
       </main>
     </div>
   );

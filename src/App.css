@@ -1,10 +1,4 @@
-/* Global Threads Base Styles */
-
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background-color: #F5EFE6;
-}
+/* App-level utility styles */
 
 a {
   text-decoration: none;
@@ -13,4 +7,11 @@ a {
 
 button {
   cursor: pointer;
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
 }

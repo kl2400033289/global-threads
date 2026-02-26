@@ -1,5 +1,0 @@
-{
-  "installCommand": "cd global-threads && npm install",
-  "buildCommand": "cd global-threads && npm run build",
-  "outputDirectory": "global-threads/build"
-}

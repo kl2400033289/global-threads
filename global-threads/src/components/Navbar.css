@@ -111,6 +111,11 @@
   padding: 5px 8px;
 }
 
+.language-select-wrap select option {
+  color: #2a1b10;
+  background: #fffaf3;
+}
+
 .user-box {
   display: flex;
   align-items: center;

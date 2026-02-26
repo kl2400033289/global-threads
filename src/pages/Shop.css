@@ -1,32 +1,57 @@
 .shop-page {
-  padding: 40px 20px;
+  padding: 42px 24px 56px;
   text-align: center;
 }
 
 /* title */
 .shop-title {
-  font-size: 32px;
-  margin-bottom: 25px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.shop-subtitle {
+  margin: 0 auto 22px;
+  color: #73513a;
+  max-width: 700px;
 }
 
 /* search */
 .shop-controls {
-  margin-bottom: 30px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .shop-search {
-  width: 320px;
+  width: 360px;
   max-width: 90%;
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+  padding: 11px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+.shop-sort {
+  padding: 11px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+.results-count {
+  color: #6f4c33;
+  margin-bottom: 22px;
 }
 
 /* grid */
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 28px;
   max-width: 1100px;
   margin: auto;
@@ -34,10 +59,11 @@
 
 /* card */
 .shop-card {
-  background: #fff;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 24px var(--shadow-color);
   transition: 0.25s ease;
 }
 
@@ -62,27 +88,34 @@
 
 /* price */
 .price {
-  font-weight: 600;
-  margin: 6px 0 14px;
+  font-weight: 700;
+  margin: 6px 0;
+  color: var(--primary);
+}
+
+.shop-rating {
+  color: #8a632f;
+  margin: 0 0 14px;
 }
 
 /* button */
 .add-btn {
-  background: #caa96b;
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
   border: none;
   padding: 10px 16px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   transition: 0.2s;
+  color: #331d05;
 }
 
 .add-btn:hover {
-  background: #b89555;
+  filter: brightness(1.03);
 }
 
 /* empty */
 .empty-text {
-  color: #777;
+  color: #7c5639;
   margin-top: 40px;
 }

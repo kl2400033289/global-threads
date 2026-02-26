@@ -1,22 +1,30 @@
 import { useContext } from "react";
 import { OrderContext } from "../context/OrderContext";
+import { AuthContext } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 import "./OrderHistory.css";
 
 function OrderHistory() {
   const { orders } = useContext(OrderContext);
+  const { user } = useContext(AuthContext);
+  const { t } = useLanguage();
+
+  const userOrders = orders.filter(
+    (order) => order.username === user?.username
+  );
 
   return (
     <div className="orders-page">
-      <h1>📦 Order History</h1>
+      <h1>📦 {t("orders.title")}</h1>
 
-      {orders.length === 0 ? (
-        <p>No orders yet</p>
+      {userOrders.length === 0 ? (
+        <p>{t("orders.none")}</p>
       ) : (
-        orders.map((order) => (
+        userOrders.map((order) => (
           <div key={order.id} className="order-card">
-            <h3>Order #{order.id}</h3>
-            <p>Date: {order.date}</p>
-            <p>Total: ₹{order.total}</p>
+            <h3>{t("orders.order")} #{order.id}</h3>
+            <p>{t("orders.date")}: {order.date}</p>
+            <p>{t("orders.total")}: ₹{order.total}</p>
 
             <div className="order-items">
               {order.items.map((item) => (

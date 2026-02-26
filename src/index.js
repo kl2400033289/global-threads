@@ -9,22 +9,26 @@ import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { OrderProvider } from "./context/OrderContext";
 import { ThemeProvider } from "./context/ThemeContext";
-
+import { ArtisanProvider } from "./context/ArtisanContext";
+import { UserProvider } from "./context/UserContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <LanguageProvider>
-  <ThemeProvider>
-    <CartProvider>
-      <ProductProvider>
-        <AuthProvider>
-          <OrderProvider>
-            <App />
-          </OrderProvider>
-        </AuthProvider>
-      </ProductProvider>
-    </CartProvider>
-  </ThemeProvider>
-</LanguageProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <UserProvider>
+          <ArtisanProvider>
+            <CartProvider>
+              <ProductProvider>
+                <OrderProvider>
+                  <App />
+                </OrderProvider>
+              </ProductProvider>
+            </CartProvider>
+          </ArtisanProvider>
+        </UserProvider>
+      </AuthProvider>
+    </ThemeProvider>
+  </LanguageProvider>
 );
-

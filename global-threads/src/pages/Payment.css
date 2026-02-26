@@ -32,3 +32,81 @@
 .pay-btn:hover {
   background: #a83244;
 }
+/* Payment Options */
+.payment-options {
+  text-align: left;
+  margin: 15px 0;
+}
+
+.payment-options label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Input Fields */
+.payment-input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.payment-input:focus {
+  outline: none;
+  border-color: #8b1e2d;
+}
+.coupon-box {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 15px;
+}
+
+.coupon-btn {
+  padding: 8px 10px;
+  background: #8b1e2d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.coupon-btn:hover {
+  background: #a83244;
+}
+.demo-coupons {
+  margin-bottom: 15px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.demo-coupons p {
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.coupon-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.coupon-list span {
+  background: #f3f3f3;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px dashed #8b1e2d;
+  font-size: 12px;
+}
+
+.coupon-list span:hover {
+  background: #8b1e2d;
+  color: white;
+}

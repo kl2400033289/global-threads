@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { translations } from "../i18n/translations";
 
 export const LanguageContext = createContext();
@@ -21,13 +21,13 @@ const getNestedValue = (source, path) =>
 export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(readStoredLanguage);
 
-  const setLang = (nextLang) => {
+  const setLang = useCallback((nextLang) => {
     const resolved = translations[nextLang] ? nextLang : defaultLanguage;
     setLangState(resolved);
     localStorage.setItem("language", resolved);
-  };
+  }, []);
 
-  const t = (key, fallback = "") => {
+  const t = useCallback((key, fallback = "") => {
     const currentValue = getNestedValue(translations[lang], key);
     if (currentValue !== undefined) {
       return currentValue;
@@ -39,7 +39,7 @@ export function LanguageProvider({ children }) {
     }
 
     return fallback || key;
-  };
+  }, [lang]);
 
   const value = useMemo(
     () => ({
@@ -53,7 +53,7 @@ export function LanguageProvider({ children }) {
         { code: "OR", label: "ଓଡ଼ିଆ" },
       ],
     }),
-    [lang]
+    [lang, setLang, t]
   );
 
   return (

@@ -102,7 +102,7 @@ function MarketingDashboard() {
       trendingProduct: withDemandLevel[0] || null,
       rankedProducts: withDemandLevel.slice(0, 6),
     };
-  }, [orders]);
+  }, [orders, t]);
 
   const engagement = useMemo(() => {
     const activeProducts = products.length;
@@ -128,7 +128,13 @@ function MarketingDashboard() {
       conversionProxy,
       engagementLevel,
     };
-  }, [products.length, customerStats.uniqueCustomers, orders.length, totalItemsSold]);
+  }, [
+    products.length,
+    customerStats.uniqueCustomers,
+    orders.length,
+    totalItemsSold,
+    t,
+  ]);
 
   const formatMoney = (value) =>
     new Intl.NumberFormat("en-IN", {

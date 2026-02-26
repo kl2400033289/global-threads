@@ -16,7 +16,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <Link to="/" className="logo">
-        <img src="/site-logo.png" alt="Global Threads" className="logo-image" />
+        <img src="/global_threads%20logo.png" alt="Global Threads" className="logo-image" />
         <span>Global Threads</span>
       </Link>
 

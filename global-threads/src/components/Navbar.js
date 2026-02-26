@@ -16,7 +16,8 @@ function Navbar() {
   return (
     <nav className="navbar">
       <Link to="/" className="logo">
-        🌍 Global Threads
+        <img src="/site-logo.png" alt="Global Threads" className="logo-image" />
+        <span>Global Threads</span>
       </Link>
 
       <ul className="nav-links">

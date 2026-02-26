@@ -113,6 +113,10 @@
   color: #73513a;
 }
 
+.auth-link-secondary {
+  margin-top: 8px;
+}
+
 .switch-auth-text span {
   color: var(--primary);
   cursor: pointer;

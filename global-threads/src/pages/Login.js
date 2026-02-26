@@ -103,6 +103,10 @@ function Login() {
           <span onClick={() => navigate("/signup")}> Sign Up</span>
         </p>
 
+        <p className="switch-auth-text auth-link-secondary">
+          <span onClick={() => navigate("/forgot-password")}>Forgot Password?</span>
+        </p>
+
         <div className="demo-panel">
           <p className="demo-title">Quick Demo Access</p>
           <div className="demo-grid">

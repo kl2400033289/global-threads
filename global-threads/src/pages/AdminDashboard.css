@@ -223,6 +223,81 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
+.accounts-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.admin-select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+.security-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.security-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.security-row:last-child {
+  border-bottom: none;
+}
+
+.security-row p {
+  margin: 4px 0 0;
+  color: #64748b;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.badge.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.dispute-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.dispute-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.dispute-card p {
+  margin: 8px 0;
+  color: #334155;
+}
 /* 🔧 Marketing product cards */
 .order-card img {
   width: 100%;
@@ -234,4 +309,10 @@
 /* optional: make card width nice */
 .order-card {
   max-width: 260px;
+}
+
+@media (max-width: 920px) {
+  .accounts-columns {
+    grid-template-columns: 1fr;
+  }
 }

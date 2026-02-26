@@ -83,16 +83,16 @@ function BuyerDashboard() {
 
   return (
     <div className="buyer-dashboard">
-      <h1>🛍 Buyer Dashboard</h1>
+      <h1>Handloom Bazaar</h1>
       <p className="buyer-subtitle">
-        Browse premium artisan pieces, manage customization, and leave trusted
-        buyer reviews.
+        Discover timeless local weaves, request custom artisan work, and share
+        trusted buyer feedback.
       </p>
 
       <div className="buyer-controls">
         <input
           type="text"
-          placeholder="Search handcrafted products"
+          placeholder="Search handloom collections"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -121,21 +121,21 @@ function BuyerDashboard() {
                 toast.success("Added to cart");
               }}
             >
-              🛒 Add to Cart
+              Add to Cart
             </button>
 
             <button
               className="review-btn"
               onClick={() => openReview(product.id)}
             >
-              ✍️ Write Review
+              Write Review
             </button>
 
             <button
               className="custom-btn"
               onClick={() => requestCustomization(product)}
             >
-              🎨 Ask for Customization
+              Ask for Customization
             </button>
           </div>
         ))}

@@ -13,9 +13,18 @@
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 700;
   letter-spacing: 0.3px;
   font-size: 1.1rem;
+}
+
+.logo-image {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
 }
 
 .nav-links {

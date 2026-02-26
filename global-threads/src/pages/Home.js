@@ -9,51 +9,64 @@ import dupattaImg from "../assets/dupatta.webp";
 
 
 function Home() {
-    const [lang, setLang] = useState("EN");
-    const t = translations[lang];
+  const [lang, setLang] = useState("EN");
+  const t = translations[lang];
 
-    return (
-    <div>
-        <div style={{ textAlign: "right", padding: "10px 40px" }}>
-  <select value={lang} onChange={(e) => setLang(e.target.value)}>
-    <option value="EN">EN</option>
-    <option value="HI">हिंदी</option>
-    <option value="TE">తెలుగు</option>
-  </select>
-</div>
+  return (
+    <div className="home-page">
+      <div className="language-bar">
+        <label htmlFor="lang-select">Language</label>
+        <select
+          id="lang-select"
+          value={lang}
+          onChange={(e) => setLang(e.target.value)}
+        >
+          <option value="EN">EN</option>
+          <option value="HI">हिंदी</option>
+          <option value="TE">తెలుగు</option>
+        </select>
+      </div>
+
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
           <h1>{t.heroTitle}</h1>
           <p>{t.heroDesc}</p>
+          <p className="hero-subtext">
+            A curated marketplace inspired by royal Indian textiles, handcrafted
+            detail, and timeless elegance.
+          </p>
 
           <div className="hero-buttons">
-  <Link to="/shop" className="primary-btn">
-    {t.shopNow}
-  </Link>
+            <Link to="/shop" className="primary-btn">
+              {t.shopNow}
+            </Link>
 
-  <Link to="/artisan" className="secondary-btn">
-    {t.explore}
-  </Link>
-</div>
+            <Link to="/artisan" className="secondary-btn">
+              {t.explore}
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Featured Section */}
       <section className="featured">
         <h2>{t.featured}</h2>
+        <p className="featured-subtitle">
+          Selected pieces blending ancient craft traditions with modern comfort.
+        </p>
 
         <div className="product-grid">
           <div className="product-card">
             <img src={sareeImg} alt="saree" />
             <h3>Handloom Saree</h3>
-            <p>₹2499</p>
+            <p>₹2,499</p>
           </div>
 
           <div className="product-card">
             <img src={kurtaImg} alt="kurta" />
             <h3>Cotton Kurta</h3>
-            <p>₹1499</p>
+            <p>₹1,499</p>
           </div>
 
           <div className="product-card">

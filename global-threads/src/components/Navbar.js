@@ -11,20 +11,47 @@ function Navbar() {
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  const dashboardPath = user ? `/${user.role}` : "/login";
 
   return (
     <nav className="navbar">
-      <div className="logo">🌍 Global Threads</div>
+      <Link to="/" className="logo">
+        🌍 Global Threads
+      </Link>
 
       <ul className="nav-links">
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/shop">Shop</Link></li>
-        <li><Link to="/login">Login</Link></li>
-        
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/shop">Shop</Link>
+        </li>
+        <li>
+          <Link to={dashboardPath}>Dashboard</Link>
+        </li>
+        {!user && (
+          <>
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
+            <li>
+              <Link to="/signup">Signup</Link>
+            </li>
+          </>
+        )}
+        {user?.role === "buyer" && (
+          <li>
+            <Link to="/orders">Orders</Link>
+          </li>
+        )}
       </ul>
 
       {/* 🌗 Theme Toggle */}
-      <button className="theme-toggle" onClick={toggleTheme}>
+      <button
+        className="theme-toggle"
+        onClick={toggleTheme}
+        aria-label="Toggle theme"
+      >
         {theme === "light" ? "🌙" : "☀️"}
       </button>
 

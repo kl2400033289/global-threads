@@ -1,18 +1,24 @@
 import { useContext } from "react";
 import { OrderContext } from "../context/OrderContext";
+import { AuthContext } from "../context/AuthContext";
 import "./OrderHistory.css";
 
 function OrderHistory() {
   const { orders } = useContext(OrderContext);
+  const { user } = useContext(AuthContext);
+
+  const userOrders = orders.filter(
+    (order) => order.username === user?.username
+  );
 
   return (
     <div className="orders-page">
       <h1>📦 Order History</h1>
 
-      {orders.length === 0 ? (
+      {userOrders.length === 0 ? (
         <p>No orders yet</p>
       ) : (
-        orders.map((order) => (
+        userOrders.map((order) => (
           <div key={order.id} className="order-card">
             <h3>Order #{order.id}</h3>
             <p>Date: {order.date}</p>

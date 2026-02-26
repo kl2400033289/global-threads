@@ -18,7 +18,7 @@ function Cart() {
       <h1>Your Cart</h1>
 
       {cart.length === 0 ? (
-        <p>Your cart is empty</p>
+        <p className="cart-empty">Your cart is empty</p>
       ) : (
         <>
           {cart.map((item) => (
@@ -49,16 +49,12 @@ function Cart() {
             </div>
           ))}
 
-          <h2 className="cart-total">Total: ₹{total}</h2>
-          <button className="checkout-btn" onClick={() => navigate("/checkout")}>
-            Proceed to Checkout
-          </button>
-          <button
-  className="checkout-btn"
-  onClick={() => navigate("/checkout")}
->
-  Proceed to Checkout
-</button>
+          <div className="cart-footer">
+            <h2 className="cart-total">Total: ₹{total}</h2>
+            <button className="checkout-btn" onClick={() => navigate("/checkout")}>
+              Proceed to Checkout
+            </button>
+          </div>
         </>
       )}
     </div>

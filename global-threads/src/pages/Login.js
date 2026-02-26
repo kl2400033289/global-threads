@@ -6,6 +6,7 @@ import { AuthContext } from "../context/AuthContext";
 function Login() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [form, setForm] = useState({
     username: "",
@@ -14,17 +15,34 @@ function Login() {
 
   const [error, setError] = useState("");
 
+  const demoAccounts = [
+    { username: "admin", password: "admin123", role: "Admin" },
+    { username: "artisan", password: "artisan123", role: "Artisan" },
+    { username: "buyer", password: "buyer123", role: "Buyer" },
+    {
+      username: "marketing",
+      password: "marketing123",
+      role: "Marketing",
+    },
+  ];
+
   const handleChange = (e) => {
+    setError("");
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const fillDemoAccount = ({ username, password }) => {
+    setForm({ username, password });
+    setError("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const result = login(form.username, form.password);
+    const result = login(form.username.trim(), form.password);
 
     if (!result.success) {
-      setError("Invalid credentials");
+      setError("Invalid credentials. Please check username and password.");
       return;
     }
 
@@ -33,49 +51,73 @@ function Login() {
   };
 
   return (
-    <div className="role-container">
-      <h1 className="role-title">Login</h1>
+    <div className="auth-page">
+      <div className="auth-card">
+        <p className="auth-badge">Welcome Back</p>
+        <h1 className="auth-title">Login to Global Threads</h1>
+        <p className="auth-subtitle">
+          Access your curated textile marketplace dashboard.
+        </p>
 
-      <form className="login-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={form.username}
-          onChange={handleChange}
-        />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            name="username"
+            placeholder="Enter username"
+            value={form.username}
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-        />
+          <label htmlFor="password">Password</label>
+          <div className="password-row">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Enter password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            <button
+              type="button"
+              className="toggle-btn"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
 
-        {error && <p className="error-text">{error}</p>}
+          {error && <p className="auth-message error-text">{error}</p>}
 
-        <button type="submit" className="primary-btn">
-          Login
-        </button>
-      </form>
-      <p style={{ marginTop: "20px" }}>
-  Don’t have an account?{" "}
-  <span
-    style={{ color: "#8b1e2d", cursor: "pointer", fontWeight: "600" }}
-    onClick={() => navigate("/signup")}
-  >
-    Sign Up
-  </span>
-</p>
+          <button type="submit" className="primary-btn auth-submit">
+            Login
+          </button>
+        </form>
 
-      {/* Demo credentials (remove later if needed) */}
-      <div style={{ marginTop: "20px", fontSize: "13px", opacity: 0.7 }}>
-        <p><b>Demo Logins:</b></p>
-        <p>Admin: admin / admin123</p>
-        <p>Artisan: artisan / artisan123</p>
-        <p>Buyer: buyer / buyer123</p>
-        <p>Marketing: marketing / marketing123</p>
+        <p className="switch-auth-text">
+          Don’t have an account?
+          <span onClick={() => navigate("/signup")}> Sign Up</span>
+        </p>
+
+        <div className="demo-panel">
+          <p className="demo-title">Quick Demo Access</p>
+          <div className="demo-grid">
+            {demoAccounts.map((account) => (
+              <button
+                key={account.username}
+                type="button"
+                className="demo-chip"
+                onClick={() => fillDemoAccount(account)}
+              >
+                {account.role}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

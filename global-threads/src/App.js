@@ -28,16 +28,24 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={
-          <ProtectedRoute>
-            <Checkout />
+
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute allowedRoles={["buyer"]}>
+              <Checkout />
             </ProtectedRoute>
           }
-           />
-        <Route path="/payment" element={<Payment />} />
-        <Route path="/orders" element={<OrderHistory />} />
-        <Route path="/artisan" element={<ArtisanDashboard />} /> 
+        />
 
+        <Route
+          path="/payment"
+          element={
+            <ProtectedRoute allowedRoles={["buyer"]}>
+              <Payment />
+            </ProtectedRoute>
+          }
+        />
 
         {/* 🔐 protected routes */}
         <Route
@@ -76,13 +84,13 @@ function App() {
           }
         />
         <Route
-  path="/orders"
-  element={
-    <ProtectedRoute allowedRoles={["buyer"]}>
-      <OrderHistory />
-    </ProtectedRoute>
-  }
-/>
+          path="/orders"
+          element={
+            <ProtectedRoute allowedRoles={["buyer"]}>
+              <OrderHistory />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

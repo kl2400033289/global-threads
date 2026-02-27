@@ -31,4 +31,4 @@ root.render(
       </AuthProvider>
     </ThemeProvider>
   </LanguageProvider>
-);
+);  

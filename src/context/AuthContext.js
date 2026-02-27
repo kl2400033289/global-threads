@@ -13,19 +13,41 @@ export function AuthProvider({ children }) {
     localStorage.setItem("user", JSON.stringify(user));
   }, [user]);
 
-  const login = (username, password) => {
+  const login = (emailOrUsername, password) => {
     const demoUsers = {
-      admin: { password: "admin123", role: "admin" },
-      artisan: { password: "artisan123", role: "artisan" },
-      buyer: { password: "buyer123", role: "buyer" },
-      marketing: { password: "marketing123", role: "marketing" },
+      admin: {
+        password: "admin123",
+        role: "admin",
+        username: "admin",
+        email: "admin@globalthreads.com",
+      },
+      artisan: {
+        password: "artisan123",
+        role: "artisan",
+        username: "artisan",
+        email: "artisan@globalthreads.com",
+      },
+      buyer: {
+        password: "buyer123",
+        role: "buyer",
+        username: "buyer",
+        email: "buyer@globalthreads.com",
+      },
+      marketing: {
+        password: "marketing123",
+        role: "marketing",
+        username: "marketing",
+        email: "marketing@globalthreads.com",
+      },
     };
 
-    const normalizedUsername = username.trim().toLowerCase();
+    const normalizedIdentifier = emailOrUsername.trim().toLowerCase();
 
     const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
     const customUser = storedUsers.find(
-      (entry) => entry.username.trim().toLowerCase() === normalizedUsername
+      (entry) =>
+        entry.username.trim().toLowerCase() === normalizedIdentifier ||
+        (entry.email && entry.email.trim().toLowerCase() === normalizedIdentifier)
     );
 
     if (customUser && customUser.password === password) {
@@ -33,10 +55,14 @@ export function AuthProvider({ children }) {
       return { success: true, role: customUser.role };
     }
 
-    const foundDemoUser = demoUsers[normalizedUsername];
+    const foundDemoUser = Object.values(demoUsers).find(
+      (entry) =>
+        entry.username === normalizedIdentifier ||
+        entry.email === normalizedIdentifier
+    );
 
     if (foundDemoUser && foundDemoUser.password === password) {
-      setUser({ role: foundDemoUser.role, username });
+      setUser({ role: foundDemoUser.role, username: foundDemoUser.username });
       return { success: true, role: foundDemoUser.role };
     }
 

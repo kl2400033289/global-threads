@@ -11,6 +11,7 @@ function Signup() {
 
   const [form, setForm] = useState({
     username: "",
+    email: "",
     password: "",
     role: "buyer",
   });
@@ -30,6 +31,17 @@ function Signup() {
       return;
     }
 
+    if (!form.email.trim()) {
+      setMessage({ text: t("signup.emailRequired"), type: "error" });
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(form.email.trim())) {
+      setMessage({ text: t("signup.emailInvalid"), type: "error" });
+      return;
+    }
+
     if (form.password.length < 6) {
       setMessage({ text: t("signup.passwordMin"), type: "error" });
       return;
@@ -44,10 +56,14 @@ function Signup() {
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
     // check if already exists
-    const exists = users.find(
-      (u) =>
-        u.username.trim().toLowerCase() === form.username.trim().toLowerCase()
-    );
+    const exists = users.find((u) => {
+      const normalizedUsername = u.username?.trim().toLowerCase();
+      const normalizedEmail = u.email?.trim().toLowerCase();
+      return (
+        normalizedUsername === form.username.trim().toLowerCase() ||
+        normalizedEmail === form.email.trim().toLowerCase()
+      );
+    });
 
     if (exists) {
       setMessage({ text: t("signup.userExists"), type: "error" });
@@ -57,6 +73,7 @@ function Signup() {
     // save user
     users.push({
       username: form.username.trim(),
+      email: form.email.trim().toLowerCase(),
       password: form.password,
       role: form.role,
     });
@@ -88,6 +105,17 @@ function Signup() {
             name="username"
             placeholder={t("signup.chooseUsername")}
             value={form.username}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="signup-email">{t("signup.email")}</label>
+          <input
+            id="signup-email"
+            type="email"
+            name="email"
+            placeholder={t("signup.enterEmail")}
+            value={form.email}
             onChange={handleChange}
             required
           />

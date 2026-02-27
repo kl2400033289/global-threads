@@ -11,18 +11,30 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const [form, setForm] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
   const [error, setError] = useState("");
 
   const demoAccounts = [
-    { username: "admin", password: "admin123", role: "Admin" },
-    { username: "artisan", password: "artisan123", role: "Artisan" },
-    { username: "buyer", password: "buyer123", role: "Buyer" },
     {
-      username: "marketing",
+      email: "admin@globalthreads.com",
+      password: "admin123",
+      role: "Admin",
+    },
+    {
+      email: "artisan@globalthreads.com",
+      password: "artisan123",
+      role: "Artisan",
+    },
+    {
+      email: "buyer@globalthreads.com",
+      password: "buyer123",
+      role: "Buyer",
+    },
+    {
+      email: "marketing@globalthreads.com",
       password: "marketing123",
       role: "Marketing",
     },
@@ -33,15 +45,15 @@ function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const fillDemoAccount = ({ username, password }) => {
-    setForm({ username, password });
+  const fillDemoAccount = ({ email, password }) => {
+    setForm({ email, password });
     setError("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const result = login(form.username.trim(), form.password);
+    const result = login(form.email.trim(), form.password);
 
     if (!result.success) {
       setError(t("login.invalidCreds"));
@@ -62,13 +74,13 @@ function Login() {
         </p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <label htmlFor="username">{t("login.username")}</label>
+          <label htmlFor="email">{t("login.emailOrUsername")}</label>
           <input
-            id="username"
+            id="email"
             type="text"
-            name="username"
-            placeholder={t("login.enterUsername")}
-            value={form.username}
+            name="email"
+            placeholder={t("login.enterEmailOrUsername")}
+            value={form.email}
             onChange={handleChange}
             required
           />
@@ -114,7 +126,7 @@ function Login() {
           <div className="demo-grid">
             {demoAccounts.map((account) => (
               <button
-                key={account.username}
+                key={account.email}
                 type="button"
                 className="demo-chip"
                 onClick={() => fillDemoAccount(account)}
